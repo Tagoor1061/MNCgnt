@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <h1>Welcome to Guntur Municipal Corporation</h1>
+    <p>Your trusted source for local services, resources, and updates.</p>
+
+    {% if current_user.is_authenticated %}
+    <!-- Dashboard shown only for logged-in users -->
+    <div class="dashboard mt-4 p-3 border rounded bg-light">
+        <h2>Dashboard</h2>
+        <p>Hello, {{ current_user.username }}!</p>
+        <ul>
+            <li>Email: {{ current_user.email }}</li>
+            <!-- Add more user-specific info here -->
+        </ul>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+    {% else %}
+    <!-- Login/Register buttons for guests -->
+    <div class="auth-buttons mt-3">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

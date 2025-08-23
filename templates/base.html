@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Guntur Municipal Corporation{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <button id="mobile-menu-toggle" class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </button>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{{ url_for('services.services') }}"><i class="fas fa-hands-helping"></i> Services</a></li>
+            </ul>
+            <button id="dark-mode-toggle" class="dark-mode-btn">
+                <i class="fas fa-moon"></i>
+            </button>
+        </nav>
+    </header>
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; <span>2025</span> Guntur Municipal Corporation. All rights reserved.</p>
+        <p>Contact: info@gunturmc.gov.in | Phone: 1800-XXX-XXXX</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
