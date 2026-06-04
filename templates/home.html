@@ -1,29 +1,212 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block body_class %}home-page{% endblock %}
 
 {% block content %}
-<div class="home-container">
-    <h1>Welcome to Guntur Municipal Corporation</h1>
-    <p>Your trusted source for local services, resources, and updates.</p>
 
-    {% if current_user.is_authenticated %}
-    <!-- Dashboard shown only for logged-in users -->
-    <div class="dashboard mt-4 p-3 border rounded bg-light">
-        <h2>Dashboard</h2>
-        <p>Hello, {{ current_user.username }}!</p>
-        <ul>
-            <li>Email: {{ current_user.email }}</li>
-            <!-- Add more user-specific info here -->
-        </ul>
-        <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Logout</a>
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/guntur-municipal-corporation-logo.jpg') }}" alt="Guntur Logo" class="logo">
+    <span class="main-title">JAL SURAKSHA
+        <div class="main-subtitle">DEPARTMENT OF GOVT MUNICIPAL CORPRATION GUNTUR</div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('viewmap.view_map') }}">View Map</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        WELCOME TO GUNTUR MUNICIPAL CORPORATION
+        <span class="sub-text">Your trusted source for local services, resources, and updates.</span>
     </div>
-    {% else %}
-    <!-- Login/Register buttons for guests -->
-    <div class="auth-buttons mt-3">
-        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
-    </div>
-    {% endif %}
 </div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Welcome to Guntur Municipal Corporation</h1>
+        <p class="hero-subtitle">Your gateway to efficient civic services, real-time information, and community engagement</p>
+        <div class="hero-buttons">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="btn-primary hero-btn">Go to Dashboard</a>
+                <a href="{{ url_for('services.services') }}" class="btn-secondary hero-btn">Explore Services</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn-primary hero-btn">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn-secondary hero-btn">Register</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="hero-bg-pattern">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.hero-section {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(46, 139, 87, 0.1) 0%, rgba(255, 133, 27, 0.1) 100%);
+    overflow: hidden;
+    margin: 2rem 0;
+    border-radius: 16px;
+}
+
+.hero-content {
+    text-align: center;
+    z-index: 2;
+    max-width: 800px;
+    padding: 2rem;
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    color: #555;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-btn {
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: var(--transition-normal);
+    box-shadow: var(--shadow-medium);
+    display: inline-block;
+    min-width: 140px;
+    text-align: center;
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-strong);
+}
+
+.hero-bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.floating-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(46, 139, 87, 0.1), rgba(255, 133, 27, 0.1));
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 80px;
+    height: 80px;
+    top: 60%;
+    right: 15%;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    width: 60px;
+    height: 60px;
+    bottom: 20%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-btn {
+        width: 200px;
+    }
+}
+</style>
+
+<footer>
+    <div class="contacts">
+        <p>Contacts:7989332358| info@gunturmunicipal.gov</p>
+        <p>Address: mbts govt.polytechnic,nallapdu, Guntur,522005, AP.</p>
+    </div>
+</footer>
 {% endblock %}

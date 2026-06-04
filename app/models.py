@@ -1,15 +1,15 @@
-# models.py
 from flask_login import UserMixin
 from app import db
-from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
-class User(db.Model):  # type: ignore
+class User(UserMixin, db.Model):  # type: ignore
     id = db.Column(db.Integer, primary_key=True)  # type: ignore
     username = db.Column(db.String(50), unique=True, nullable=False)  # type: ignore
     email = db.Column(db.String(120), unique=True, nullable=False)  # type: ignore
     password_hash = db.Column(db.String(128), nullable=False)  # type: ignore
     role = db.Column(db.String(20), default="user")  # type: ignore  # "admin" or "user"
+    last_login = db.Column(db.DateTime, nullable=True)  # type: ignore
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -19,3 +19,54 @@ class User(db.Model):  # type: ignore
 
     def load_user(user_id): # type: ignore
         return User.query.get(int(user_id))
+
+    @property
+    def recent_reports(self):
+        return len(self.issues)
+
+class Issue(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.Text, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), default='pending')
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('issues', lazy=True))
+
+class News(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(50), default='general')
+    source = db.Column(db.String(100), default='Guntur Municipal Corporation')
+    is_flood_related = db.Column(db.Boolean, default=False)
+    published_date = db.Column(db.DateTime, default=datetime.utcnow)
+    image_url = db.Column(db.String(300), nullable=True)
+    external_url = db.Column(db.String(300), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'content': self.content,
+            'category': self.category,
+            'source': self.source,
+            'is_flood_related': self.is_flood_related,
+            'published_date': self.published_date.isoformat() if self.published_date else None,
+            'image_url': self.image_url,
+            'external_url': self.external_url,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+
+class PushSubscription(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)  # Optional: link to user if logged in
+    endpoint = db.Column(db.String(500), nullable=False)
+    p256dh = db.Column(db.String(200), nullable=False)
+    auth = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('push_subscriptions', lazy=True))

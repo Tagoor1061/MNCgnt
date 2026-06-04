@@ -7,37 +7,71 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
-<body>
-    <header>
-        <button id="mobile-menu-toggle" class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
-        </button>
-        <nav>
-            <ul>
-                <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="{{ url_for('services.services') }}"><i class="fas fa-hands-helping"></i> Services</a></li>
-            </ul>
-            <button id="dark-mode-toggle" class="dark-mode-btn">
-                <i class="fas fa-moon"></i>
-            </button>
-        </nav>
-    </header>
+<body class="{% block body_class %}{% endblock %}">
+    <div id="loading-overlay">
+        <video autoplay muted loop>
+            <source src="{{ url_for('static', filename='img/load.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
     <main>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="flashes">
-                    {% for message in messages %}
-                        <div class="flash">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
     </main>
-    <footer>
-        <p>&copy; <span>2025</span> Guntur Municipal Corporation. All rights reserved.</p>
-        <p>Contact: info@gunturmc.gov.in | Phone: 1800-XXX-XXXX</p>
-    </footer>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Service Worker Registration for Push Notifications
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/js/sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+
+        // Push Notification Subscription
+        function subscribeToNotifications() {
+            if ('serviceWorker' in navigator && 'PushManager' in window) {
+                navigator.serviceWorker.ready.then(function(registration) {
+                    registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlB64ToUint8Array('{{ vapid_public_key|default("") }}')
+                    }).then(function(subscription) {
+                        console.log('User is subscribed:', subscription);
+                        fetch('/push/subscribe', {
+                            method: 'POST',
+                            body: JSON.stringify(subscription),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                    }).catch(function(error) {
+                        console.log('Failed to subscribe the user:', error);
+                    });
+                });
+            }
+        }
+
+        function urlB64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        // Auto-subscribe on page load if permission granted
+        if ('Notification' in window && Notification.permission === 'granted') {
+            subscribeToNotifications();
+        }
+    </script>
 </body>
 </html>

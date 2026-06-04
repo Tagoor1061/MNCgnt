@@ -1,16 +1,341 @@
 {% extends 'base.html' %}
 
+{% block body_class %}other-page{% endblock %}
+
 {% block title %}Services{% endblock %}
 
 {% block content %}
-<section>
-    <h1>Flood Management Services</h1>
-    <p>Information about flood management services will be displayed here.</p>
-    <ul>
-        <li>Emergency Response</li>
-        <li>Community Awareness Programs</li>
-        <li>Resource Allocation</li>
-        <li>Infrastructure Support</li>
-    </ul>
-    <p>
+<section class="services-section">
+    <h1>Municipal Services - Guntur Municipal Corporation</h1>
+
+    <div class="services-grid">
+        <!-- Weather Monitoring Service -->
+        <div class="service-card">
+            <div class="service-icon">🌤️</div>
+            <h3>Weather Monitoring & Alerts</h3>
+            <p>Real-time weather monitoring for Andhra Pradesh cities with severe weather push notifications for thunderstorms, heavy rain, extreme temperatures, and high winds.</p>
+            <ul>
+                <li>Live weather data for 13+ cities</li>
+                <li>Automated severe weather alerts</li>
+                <li>Browser push notifications</li>
+                <li>Weather forecasting</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('weather.weather_dashboard') }}" class="service-btn">View Weather</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="service-btn">Login to View</a>
+            {% endif %}
+        </div>
+
+        <!-- News & Information Service -->
+        <div class="service-card">
+            <div class="service-icon">📰</div>
+            <h3>News & Information</h3>
+            <p>Stay updated with latest news and information from multiple sources, with special focus on flood-related news and municipal announcements.</p>
+            <ul>
+                <li>Multi-source news aggregation</li>
+                <li>Flood-related news prioritization</li>
+                <li>Search functionality</li>
+                <li>Real-time updates</li>
+            </ul>
+            <a href="{{ url_for('news.news') }}" class="service-btn">Read News</a>
+        </div>
+
+        <!-- Issue Reporting Service -->
+        <div class="service-card">
+            <div class="service-icon">📍</div>
+            <h3>Issue Reporting</h3>
+            <p>Report municipal issues, infrastructure problems, or service requests with precise location mapping for faster resolution.</p>
+            <ul>
+                <li>Location-based reporting</li>
+                <li>Interactive map selection</li>
+                <li>Status tracking</li>
+                <li>Admin dashboard for officials</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="service-btn">Report Issue</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="service-btn">Login to Report</a>
+            {% endif %}
+        </div>
+
+        <!-- Interactive Map Service -->
+        <div class="service-card">
+            <div class="service-icon">🗺️</div>
+            <h3>Interactive City Map</h3>
+            <p>Explore Guntur city with interactive maps showing municipal services, reported issues, and important locations.</p>
+            <ul>
+                <li>Issue location visualization</li>
+                <li>Heat maps for problem areas</li>
+                <li>Location selection for reports</li>
+                <li>Real-time data overlay</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('viewmap.view_map') }}" class="service-btn">View Map</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="service-btn">Login to View</a>
+            {% endif %}
+        </div>
+
+        <!-- Flood Management Service -->
+        <div class="service-card">
+            <div class="service-icon">🌊</div>
+            <h3>Flood Management</h3>
+            <p>Comprehensive flood management services including emergency response, community awareness, and infrastructure support during monsoon seasons.</p>
+            <ul>
+                <li>Emergency response coordination</li>
+                <li>Community awareness programs</li>
+                <li>Resource allocation</li>
+                <li>Infrastructure monitoring</li>
+                <li>Weather-based early warnings</li>
+            </ul>
+            <a href="{{ url_for('about.about') }}" class="service-btn">Learn More</a>
+        </div>
+
+        <!-- User Dashboard Service -->
+        <div class="service-card">
+            <div class="service-icon">👤</div>
+            <h3>User Dashboard</h3>
+            <p>Personal dashboard for citizens to manage their reports, view service status, and access personalized municipal services.</p>
+            <ul>
+                <li>Report history tracking</li>
+                <li>Service request status</li>
+                <li>Personal notifications</li>
+                <li>Account management</li>
+            </ul>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.dashboard') }}" class="service-btn">My Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" class="service-btn">Login</a>
+            {% endif %}
+        </div>
+
+        <!-- Admin Services -->
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <div class="service-card admin-card">
+            <div class="service-icon">⚙️</div>
+            <h3>Administrative Services</h3>
+            <p>Administrative tools for municipal officials to manage issues, monitor services, and oversee city operations.</p>
+            <ul>
+                <li>Issue management dashboard</li>
+                <li>User activity monitoring</li>
+                <li>Service analytics</li>
+                <li>Administrative controls</li>
+            </ul>
+            <a href="{{ url_for('main.admin_dashboard') }}" class="service-btn admin-btn">Admin Panel</a>
+        </div>
+        {% endif %}
+
+        <!-- Public Information -->
+        <div class="service-card">
+            <div class="service-icon">ℹ️</div>
+            <h3>Public Information</h3>
+            <p>Access to public information, municipal announcements, contact details, and important resources for citizens.</p>
+            <ul>
+                <li>Municipal contact information</li>
+                <li>Service announcements</li>
+                <li>Emergency contacts</li>
+                <li>Public resources</li>
+            </ul>
+            <a href="{{ url_for('about.about') }}" class="service-btn">Contact Info</a>
+        </div>
+    </div>
+
+    <!-- Service Statistics -->
+    <div class="service-stats">
+        <h2>Service Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">{{ weather_cities|default(13) }}</div>
+                <div class="stat-label">Cities Monitored</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Weather Monitoring</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">Real-time</div>
+                <div class="stat-label">Push Notifications</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">Multi-source</div>
+                <div class="stat-label">News Aggregation</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.services-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.service-card {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-large);
+    padding: 2rem;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-normal);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-primary);
+}
+
+.service-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-strong);
+}
+
+.service-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.service-card h3 {
+    color: #2E8B57;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.service-card p {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.service-card ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1.5rem;
+}
+
+.service-card li {
+    padding: 0.3rem 0;
+    color: #555;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.service-card li:before {
+    content: "✓";
+    color: #2E8B57;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+.service-btn {
+    display: inline-block;
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--transition-normal);
+    font-weight: 600;
+    box-shadow: var(--shadow-soft);
+    position: relative;
+    overflow: hidden;
+}
+
+.service-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    color: white;
+}
+
+.service-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.service-btn:hover::before {
+    left: 100%;
+}
+
+.admin-card {
+    border: 2px solid #ff6b35;
+}
+
+.admin-btn {
+    background: #ff6b35;
+}
+
+.admin-btn:hover {
+    background: #e55a2b;
+}
+
+.service-stats {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    padding: 1rem;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2E8B57;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .services-section {
+        padding: 1rem;
+    }
+}
+</style>
 {% endblock %}

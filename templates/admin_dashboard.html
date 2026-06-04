@@ -4,22 +4,87 @@
 
 {% block content %}
 <section>
-    <h1>Welcome, {{ session['username'] }} 👋</h1>
-    <p>You are logged in as a <strong>{{ session['role'] }}</strong>.</p>
+    <h1>Welcome, {{ current_user.username }} 👋</h1>
+    <p>You are logged in as a <strong>{{ current_user.role }}</strong>.</p>
 
-    <div class="dashboard-content">
-        <div class="card">
-            <h2>Your Profile</h2>
-            <p>View and edit your profile information.</p>
-            <a href="#" class="btn">Edit Profile</a>
-        </div>
-        <div class="card">
-            <h2>Recent Activities</h2>
-            <p>Check your recent activities and updates.</p>
-            <a href="#" class="btn">View Activities</a>
-        </div>
+
+    <div style="max-inline-size:900px;margin:2rem auto;">
+        <h2>Reported Issues Map</h2>
+        <div id="admin-map" style="block-size:480px;border-radius:10px;"></div>
     </div>
 
+    <div style="max-inline-size:900px;margin:2rem auto;">
+        <h2>All Submitted Reports</h2>
+        <table class="table table-striped" style="inline-size:100%;margin-block-start:1.5rem;border: 2px solid #333;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>Reported By</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td>{{ issue.id }}</td>
+                    <td>{{ issue.description }}</td>
+                    <td>{{ issue.status }}</td>
+                    <td>{{ issue.latitude }}</td>
+                    <td>{{ issue.longitude }}</td>
+                    <td>{{ issue.user.username }}</td>
+                    <td>{{ issue.timestamp.strftime('%Y-%m-%d %H:%M') if issue.timestamp else '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="{{ url_for('main.home') }}" title="Home" style="margin-inline-end:1.5rem;font-size:1.5em;vertical-align:middle;">🏠</a>
     <a href="{{ url_for('auth.logout') }}" class="btn btn-danger mt-3">Logout</a>
 </section>
+{% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    .table.table-striped {
+        border: 2px solid #333 !important;
+    }
+    .table.table-striped th, .table.table-striped td {
+        border: 1px solid #333 !important;
+    }
+</style>
+<script>
+    // Uncommented OpenWeatherMap API fetch for flood risk visualization
+    fetch('https://api.openweathermap.org/data/2.5/forecast?lat=16.3067&lon=80.4365&appid=YOUR_API_KEY')
+        .then(response => response.json())
+        .then(data => {
+            // You can process weather data here for advanced visualization
+            // For now, just log it
+            console.log('Weather data:', data);
+        })
+        .catch(err => console.error('Weather API error:', err));
+</script>
+<script>
+    const issues = {{ issues_json|tojson|safe }};
+    const currentUserId = {{ current_user.id|tojson|safe }};
+    const isAdmin = {{ (current_user.role == 'admin')|tojson|safe }};
+    let map = L.map('admin-map').setView([16.3067, 80.4365], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+    issues.forEach(function(issue) {
+        let marker = L.marker([issue.latitude, issue.longitude]).addTo(map);
+        let popupContent = `<b>${issue.description}</b><br>Status: ${issue.status}<br>Reported by: ${issue.user.username}`;
+        if (isAdmin || issue.user_id === currentUserId) {
+            popupContent += `<br><form method='post' action='/remove_issue/${issue.id}' style='margin-block-start:8px;'><button type='submit' style='color:red;'>Remove</button></form>`;
+        }
+        marker.bindPopup(popupContent);
+    });
+</script>
+{% endblock %}
 {% endblock %}
