@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Andhra Pradesh Weather Dashboard{% endblock %}
+
+{% block content %}
+<section class="container" style="padding: 2rem 1rem;">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 2.5em; color: #1976d2; margin-bottom: 0.5rem;">
+      🌤️ Andhra Pradesh Weather Dashboard
+    </h1>
+    <p style="color: #666; font-size: 1.1em;">Real-time weather information for major cities across Andhra Pradesh</p>
+  </div>
+
+  {% if weather_error %}
+    <div style="background: #ffebee; border-left: 4px solid #d32f2f; padding: 1rem; border-radius: 4px; margin-bottom: 2rem;">
+      <p style="color: #d32f2f; margin: 0;">
+        <strong>⚠️ Error:</strong> {{ weather_error }}
+      </p>
+    </div>
+  {% endif %}
+
+  {% if cities_weather %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+      
+      {% for weather in cities_weather %}
+        <div style="
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          color: white;
+          transition: transform 0.3s, box-shadow 0.3s;
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        "
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.2)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)'">
+          
+          <!-- Background decorative element -->
+          <div style="
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+          "></div>
+
+          {% if weather.status == 'ok' %}
+            <!-- City Name -->
+            <div style="position: relative; z-index: 1; margin-bottom: 1.5rem;">
+              <h2 style="font-size: 1.8em; margin: 0 0 0.5rem 0;">{{ weather.city }}</h2>
+              <div style="height: 2px; width: 60px; background: rgba(255,255,255,0.5);"></div>
+            </div>
+
+            <!-- Temperature Display -->
+            <div style="position: relative; z-index: 1; margin-bottom: 1.5rem;">
+              <div style="font-size: 3.5em; font-weight: bold; line-height: 1;">
+                {% if weather.temperature_c %}
+                  {{ "%.1f"|format(weather.temperature_c) }}°C
+                {% else %}
+                  --°C
+                {% endif %}
+              </div>
+              <div style="font-size: 1.2em; margin-top: 0.5rem; opacity: 0.95;">
+                {{ weather.condition if weather.condition else 'Data unavailable' }}
+              </div>
+            </div>
+
+            <!-- Weather Details Grid -->
+            <div style="position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <!-- Humidity -->
+              <div style="
+                background: rgba(255,255,255,0.15);
+                border-radius: 8px;
+                padding: 1rem;
+                text-align: center;
+              ">
+                <div style="font-size: 1.5em; margin-bottom: 0.3rem;">💧</div>
+                <div style="font-size: 0.9em; opacity: 0.85;">Humidity</div>
+                <div style="font-size: 1.4em; font-weight: bold; margin-top: 0.3rem;">
+                  {% if weather.humidity %}
+                    {{ weather.humidity }}%
+                  {% else %}
+                    --
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Wind Speed -->
+              <div style="
+                background: rgba(255,255,255,0.15);
+                border-radius: 8px;
+                padding: 1rem;
+                text-align: center;
+              ">
+                <div style="font-size: 1.5em; margin-bottom: 0.3rem;">💨</div>
+                <div style="font-size: 0.9em; opacity: 0.85;">Wind Speed</div>
+                <div style="font-size: 1.4em; font-weight: bold; margin-top: 0.3rem;">
+                  {% if weather.wind_kph %}
+                    {{ weather.wind_kph|int }} km/h
+                  {% else %}
+                    --
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Updated Time -->
+            <div style="position: relative; z-index: 1; margin-top: 1rem; font-size: 0.85em; opacity: 0.8; text-align: center;">
+              Updated: {{ weather.updated_at if weather.updated_at else 'Just now' }}
+            </div>
+
+          {% else %}
+            <!-- Error State -->
+            <div style="position: relative; z-index: 1; text-align: center; padding: 2rem 0;">
+              <div style="font-size: 3em; margin-bottom: 1rem;">⚠️</div>
+              <h3 style="margin: 0.5rem 0;">{{ weather.city }}</h3>
+              <p style="margin: 0.5rem 0; font-size: 0.95em;">
+                {{ weather.message if weather.message else 'Unable to fetch weather data' }}
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+    </div>
+
+    <!-- Legend and Information -->
+    <div style="
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-left: 4px solid #1976d2;
+    ">
+      <h3 style="color: #1976d2; margin-top: 0;">📍 Coverage Area</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div>
+          <strong>🌊 Visakhapatnam</strong><br/>
+          <small style="color: #666;">Northern coastal region</small>
+        </div>
+        <div>
+          <strong>🏔️ Vizianagaram</strong><br/>
+          <small style="color: #666;">Northern Andhra Pradesh</small>
+        </div>
+        <div>
+          <strong>🕉️ Tirupati</strong><br/>
+          <small style="color: #666;">Southern Andhra Pradesh</small>
+        </div>
+        <div>
+          <strong>🌄 Anantapur</strong><br/>
+          <small style="color: #666;">Western Andhra Pradesh</small>
+        </div>
+        <div>
+          <strong>🏛️ Guntur</strong><br/>
+          <small style="color: #666;">Central Andhra Pradesh</small>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #ddd;">
+        <h4 style="color: #1976d2; margin-top: 0;">💡 Features</h4>
+        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+          <li>Real-time weather data from Open-Meteo API (free, no API key required)</li>
+          <li>Coverage across all major regions of Andhra Pradesh</li>
+          <li>Temperature, humidity, wind speed, and weather conditions</li>
+          <li>Updated automatically every time you refresh the page</li>
+        </ul>
+      </div>
+
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd; text-align: center; color: #999; font-size: 0.9em;">
+        <p style="margin: 0;">
+          Data source: Open-Meteo Free Weather API • Last updated: {{ cities_weather[0].updated_at if cities_weather[0].updated_at else 'Just now' }}
+        </p>
+      </div>
+    </div>
+
+  {% else %}
+    <div style="
+      background: #fff3e0;
+      border-left: 4px solid #f57f17;
+      padding: 2rem;
+      border-radius: 4px;
+      text-align: center;
+    ">
+      <p style="font-size: 1.1em; color: #666; margin: 0;">
+        No weather data is available at the moment. Please try refreshing the page.
+      </p>
+    </div>
+  {% endif %}
+
+</section>
+
+<style>
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem !important;
+    }
+    h1 {
+      font-size: 1.8em !important;
+    }
+  }
+</style>
+{% endblock %}

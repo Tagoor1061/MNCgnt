@@ -1,0 +1,60 @@
+{
+    "status": "default",
+    "basin_id": "100",
+    "basin_name": "Krishna Basin",
+    "qpf_valid_for": "next 24h",
+    "sub_basins": [
+        {
+            "name": "Upper Krishna",
+            "qpf_mm": 32.5,
+            "risk": "Moderate"
+        },
+        {
+            "name": "Middle Krishna (Srisailam-Nagarjuna Sagar)",
+            "qpf_mm": 58.4,
+            "risk": "High"
+        },
+        {
+            "name": "Musi Sub-Basin",
+            "qpf_mm": 71.2,
+            "risk": "High"
+        },
+        {
+            "name": "Lower Krishna / Delta (Guntur-Vijayawada)",
+            "qpf_mm": 88.6,
+            "risk": "Very High"
+        },
+        {
+            "name": "Munneru Sub-Basin",
+            "qpf_mm": 64.0,
+            "risk": "High"
+        }
+    ],
+    "polygon": [
+        [
+            16.1,
+            79.8
+        ],
+        [
+            16.6,
+            80.2
+        ],
+        [
+            17.0,
+            80.9
+        ],
+        [
+            16.5,
+            81.3
+        ],
+        [
+            15.95,
+            80.7
+        ],
+        [
+            16.1,
+            79.8
+        ]
+    ],
+    "fetched_at": "2026-08-24 17:19:28"
+}

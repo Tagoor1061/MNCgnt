@@ -1,0 +1,88 @@
+{
+    "status": "default",
+    "warnings_count": 3,
+    "warnings": [
+        {
+            "district": "Guntur",
+            "warning_level": "Red Warning",
+            "color": "#d32f2f",
+            "severity": "extremely_heavy",
+            "message": "Extremely heavy rainfall (>204 mm) expected; severe urban inundation risk.",
+            "valid_from": "today",
+            "valid_to": "+48h",
+            "polygon": [
+                [
+                    16.28,
+                    80.4
+                ],
+                [
+                    16.34,
+                    80.48
+                ],
+                [
+                    16.31,
+                    80.52
+                ],
+                [
+                    16.24,
+                    80.44
+                ]
+            ]
+        },
+        {
+            "district": "Bapatla",
+            "warning_level": "Orange Warning",
+            "color": "#ff9800",
+            "severity": "very_heavy",
+            "message": "Very heavy rainfall (115-204 mm); de-watering pumps deployed.",
+            "valid_from": "today",
+            "valid_to": "+24h",
+            "polygon": [
+                [
+                    15.88,
+                    80.42
+                ],
+                [
+                    15.94,
+                    80.5
+                ],
+                [
+                    15.9,
+                    80.55
+                ],
+                [
+                    15.83,
+                    80.47
+                ]
+            ]
+        },
+        {
+            "district": "Palnadu",
+            "warning_level": "Yellow Warning",
+            "color": "#fbc02d",
+            "severity": "heavy",
+            "message": "Heavy rainfall (64-115 mm); waterlogging in low-lying wards.",
+            "valid_from": "today",
+            "valid_to": "+24h",
+            "polygon": [
+                [
+                    16.1,
+                    79.82
+                ],
+                [
+                    16.2,
+                    79.95
+                ],
+                [
+                    16.12,
+                    80.02
+                ],
+                [
+                    16.02,
+                    79.9
+                ]
+            ]
+        }
+    ],
+    "fetched_at": "2026-08-24 17:19:13"
+}

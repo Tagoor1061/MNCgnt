@@ -1,0 +1,138 @@
+{
+    "status": "default",
+    "basin_qpf": {
+        "basin_name": "Krishna Basin (Lower)",
+        "issued_at": null,
+        "polygon": [
+            [
+                16.05,
+                80.1
+            ],
+            [
+                16.35,
+                80.3
+            ],
+            [
+                16.2,
+                80.65
+            ],
+            [
+                15.9,
+                80.4
+            ]
+        ],
+        "sub_basins": [
+            {
+                "name": "Krishna Delta",
+                "qpf_mm": 96.4,
+                "risk": "HIGH"
+            },
+            {
+                "name": "Munneru Tributary",
+                "qpf_mm": 64.2,
+                "risk": "MODERATE"
+            },
+            {
+                "name": "Budameru Channel",
+                "qpf_mm": 42.8,
+                "risk": "MODERATE"
+            }
+        ],
+        "status": "default",
+        "fetched_at": "2026-08-24 17:19:18"
+    },
+    "district_rainfall": {
+        "districts": [
+            {
+                "district": "Guntur",
+                "rainfall_mm": 118.6,
+                "normal_mm": 62.1,
+                "departure_percent": 91.0,
+                "category": "Very Heavy",
+                "lat": 16.3067,
+                "lon": 80.4365
+            },
+            {
+                "district": "Bapatla",
+                "rainfall_mm": 96.2,
+                "normal_mm": 58.4,
+                "departure_percent": 64.7,
+                "category": "Heavy",
+                "lat": 15.9049,
+                "lon": 80.4675
+            },
+            {
+                "district": "Palnadu",
+                "rainfall_mm": 54.7,
+                "normal_mm": 44.0,
+                "departure_percent": 24.3,
+                "category": "Moderate",
+                "lat": 16.1067,
+                "lon": 79.9365
+            }
+        ],
+        "status": "default",
+        "fetched_at": "2026-08-24 17:19:08"
+    },
+    "state_rainfall": {
+        "state": "Andhra Pradesh",
+        "actual_mm": 74.8,
+        "normal_mm": 51.2,
+        "departure_percent": 46.1,
+        "status": "default",
+        "fetched_at": "2026-08-24 17:19:13"
+    },
+    "gauges": [
+        {
+            "gauge_id": "hybasin_31013",
+            "site_name": "Vijayawada (Prakasam Barrage)",
+            "lat": 16.5033,
+            "lon": 80.6165,
+            "status": "ABOVE_NORMAL",
+            "discharge_m3s": 812.3,
+            "forecast_peak_m3s": 940.0,
+            "forecast_time": "+24h",
+            "message": "River rising; bund strengthening advised along low-lying stretches."
+        },
+        {
+            "gauge_id": "hybasin_31027",
+            "site_name": "Tenali Canal Gauge",
+            "lat": 16.2389,
+            "lon": 80.6448,
+            "status": "NORMAL",
+            "discharge_m3s": 210.5,
+            "forecast_peak_m3s": 245.0,
+            "forecast_time": "+24h",
+            "message": "Stable flow within normal monsoon range."
+        }
+    ],
+    "flash_floods": [
+        {
+            "area": "Guntur \u2014 Krishna delta lowlands",
+            "severity": "MODERATE",
+            "probability_percent": 55,
+            "valid_from": "today",
+            "valid_to": "+36h",
+            "polygon": [
+                [
+                    16.2,
+                    80.35
+                ],
+                [
+                    16.32,
+                    80.48
+                ],
+                [
+                    16.25,
+                    80.58
+                ],
+                [
+                    16.12,
+                    80.44
+                ]
+            ],
+            "message": "Flash-flood watch: intense rain may cause rapid runoff in urban drains."
+        }
+    ],
+    "fetched_at": "2026-08-24 17:19:18"
+}

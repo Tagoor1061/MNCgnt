@@ -1,0 +1,41 @@
+{
+    "basin_name": "Krishna Basin (Lower)",
+    "issued_at": null,
+    "polygon": [
+        [
+            16.05,
+            80.1
+        ],
+        [
+            16.35,
+            80.3
+        ],
+        [
+            16.2,
+            80.65
+        ],
+        [
+            15.9,
+            80.4
+        ]
+    ],
+    "sub_basins": [
+        {
+            "name": "Krishna Delta",
+            "qpf_mm": 96.4,
+            "risk": "HIGH"
+        },
+        {
+            "name": "Munneru Tributary",
+            "qpf_mm": 64.2,
+            "risk": "MODERATE"
+        },
+        {
+            "name": "Budameru Channel",
+            "qpf_mm": 42.8,
+            "risk": "MODERATE"
+        }
+    ],
+    "status": "default",
+    "fetched_at": "2026-08-24 17:19:18"
+}

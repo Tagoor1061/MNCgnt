@@ -5,21 +5,55 @@
 {% block content %}
 
 <nav class="main-navbar">
-    <img src="{{ url_for('static', filename='img/guntur-municipal-corporation-logo.jpg') }}" alt="Guntur Logo" class="logo">
-    <span class="main-title">JAL SURAKSHA
-        <div class="main-subtitle">DEPARTMENT OF GOVT MUNICIPAL CORPRATION GUNTUR</div>
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
     </span>
 </nav>
 
 <nav class="secondary-navbar">
     <ul>
         <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
         <li><a href="{{ url_for('news.news') }}">News</a></li>
-        <li><a href="{{ url_for('services.services') }}">Services</a></li>
         <li><a href="{{ url_for('about.about') }}">About</a></li>
         {% if current_user.is_authenticated %}
-            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            {% if current_user.role == 'admin' %}
+                <li><a href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a></li>
+            {% else %}
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            {% endif %}
             <li><a href="{{ url_for('viewmap.view_map') }}">View Map</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
         {% else %}
             <li><a href="{{ url_for('auth.login') }}">Login</a></li>
             <li><a href="{{ url_for('auth.register') }}">Register</a></li>
@@ -29,8 +63,8 @@
 
 <div class="marquee-container">
     <div class="marquee">
-        WELCOME TO GUNTUR MUNICIPAL CORPORATION
-        <span class="sub-text">Your trusted source for local services, resources, and updates.</span>
+        WELCOME TO GOVERNMENT MUNICIPAL CORPORATION
+        <span class="sub-text">Your trusted source for local services, disaster management, emergency updates, and civic issue reporting.</span>
     </div>
 </div>
 
@@ -44,17 +78,18 @@
     {% endif %}
 {% endwith %}
 
+<!-- HERO SECTION -->
 <div class="hero-section">
     <div class="hero-content">
-        <h1 class="hero-title">Welcome to Guntur Municipal Corporation</h1>
-        <p class="hero-subtitle">Your gateway to efficient civic services, real-time information, and community engagement</p>
+        <h1 class="hero-title">Welcome to Government Municipal Corporation</h1>
+        <p class="hero-subtitle">Your gateway to efficient civic services, real-time disaster management alerts, and quick issue reporting to the government</p>
         <div class="hero-buttons">
+            <a href="{{ url_for('main.natural_disasters') }}" class="btn-primary hero-btn" style="background: linear-gradient(135deg, #FF851B 0%, #FF6B35 100%);"><i class="fas fa-shield-alt"></i> Natural Disasters</a>
+            <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-secondary hero-btn" style="background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);"><i class="fas fa-bullhorn"></i> Report Issue to Government</a>
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('main.dashboard') }}" class="btn-primary hero-btn">Go to Dashboard</a>
-                <a href="{{ url_for('services.services') }}" class="btn-secondary hero-btn">Explore Services</a>
+                <a href="{{ url_for('main.dashboard') }}" class="btn-primary hero-btn"><i class="fas fa-tachometer-alt"></i> Go to Dashboard</a>
             {% else %}
-                <a href="{{ url_for('auth.login') }}" class="btn-primary hero-btn">Login</a>
-                <a href="{{ url_for('auth.register') }}" class="btn-secondary hero-btn">Register</a>
+                <a href="{{ url_for('auth.login') }}" class="btn-primary hero-btn"><i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </div>
     </div>
@@ -67,10 +102,493 @@
     </div>
 </div>
 
+
+
 <style>
+/* Card Dropdown Select Box */
+.card-dropdown-select-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    margin-bottom: 1.2rem;
+}
+
+.card-select-label {
+    display: block;
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-select-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #1976d2;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.card-select-control:hover, .card-select-control:focus {
+    border-color: #FF851B;
+    box-shadow: 0 0 0 3px rgba(255, 133, 27, 0.2);
+    outline: none;
+}
+/* Section Base Container */
+.home-container-section {
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 2.5rem;
+    background: rgba(255, 255, 255, 0.96);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    scroll-margin-top: 2rem;
+}
+
+/* Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eaeaea;
+}
+
+.header-icon-badge {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.orange-badge {
+    background: linear-gradient(135deg, #FF851B 0%, #FF6B35 100%);
+    box-shadow: 0 6px 15px rgba(255, 133, 27, 0.3);
+}
+
+.blue-badge {
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    box-shadow: 0 6px 15px rgba(25, 118, 210, 0.3);
+}
+
+.section-header h2 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.9rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.section-header p {
+    margin: 0;
+    color: #666;
+    font-size: 1.05rem;
+}
+
+/* Weather & Disaster Banner */
+.disaster-weather-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    border-radius: 14px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.2);
+}
+
+.weather-summary-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.weather-main-info .city-name {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 0.3rem;
+}
+
+.weather-main-info .temp-display {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+}
+
+.weather-main-info .weather-cond {
+    font-size: 1.15rem;
+    opacity: 0.95;
+}
+
+.weather-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: rgba(255, 255, 255, 0.12);
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+}
+
+.detail-item {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.status-green {
+    background: #2e7d32;
+    color: white;
+}
+
+.weather-action-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.disaster-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #2E8B57;
+    color: white;
+    padding: 0.85rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.disaster-btn:hover {
+    background: #236c39;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.btn-outline:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+/* Disaster Grid */
+.disaster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.disaster-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.8rem;
+    border: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.disaster-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.border-blue { border-top: 5px solid #1976d2; }
+.border-orange { border-top: 5px solid #FF851B; }
+.border-red { border-top: 5px solid #d32f2f; }
+.border-green { border-top: 5px solid #2e7d32; }
+
+.disaster-card-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.8rem;
+}
+
+.text-blue { color: #1976d2; }
+.text-orange { color: #FF851B; }
+.text-red { color: #d32f2f; }
+.text-green { color: #2e7d32; }
+
+.disaster-card h3 {
+    margin: 0 0 0.8rem 0;
+    font-size: 1.25rem;
+    color: #2c3e50;
+}
+
+.disaster-card p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.disaster-card ul {
+    margin: 0 0 1.2rem 0;
+    padding-left: 1.2rem;
+    color: #666;
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.disaster-card li {
+    margin-bottom: 0.4rem;
+}
+
+.card-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-top: auto;
+    transition: color 0.2s;
+}
+
+.card-link-btn:hover {
+    color: #0d47a1;
+    text-decoration: underline;
+}
+
+/* Helplines inside card */
+.helpline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.helpline-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #e8f5e9;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+}
+
+.helpline-item i {
+    color: #2e7d32;
+}
+
+/* Steps Bar */
+.reporting-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.step-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    background: #f0f4f8;
+    padding: 1.2rem 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #1976d2;
+}
+
+.step-number {
+    width: 42px;
+    height: 42px;
+    background: #1976d2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.step-info h4 {
+    margin: 0 0 0.2rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.step-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+/* Reporting Form Box */
+.reporting-box {
+    background: white;
+    border-radius: 14px;
+    padding: 2rem;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+}
+
+.box-title {
+    margin: 0 0 1.5rem 0;
+    color: #1976d2;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.location-picker-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+.location-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.location-picker-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.btn-gps {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-gps:hover {
+    background: #1565c0;
+}
+
+.map-container {
+    height: 320px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border: 2px solid #ddd;
+}
+
+.coords-status-box {
+    background: white;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    color: #666;
+    font-weight: 500;
+    border: 1px solid #e0e0e0;
+    font-size: 0.95rem;
+}
+
+.btn-submit-report {
+    width: 100%;
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+.btn-submit-report:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
+}
+
+.login-prompt-banner {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.login-prompt-banner p {
+    margin: 0 0 1rem 0;
+    color: #0d47a1;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.login-prompt-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Category Pills */
+.issue-categories-row {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.category-pill {
+    background: #f0f4f8;
+    color: #1976d2;
+    padding: 0.6rem 1.2rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #d0d7de;
+}
+
+/* Hero Section Refinements */
 .hero-section {
     position: relative;
-    min-height: 70vh;
+    min-height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,13 +601,13 @@
 .hero-content {
     text-align: center;
     z-index: 2;
-    max-width: 800px;
+    max-width: 850px;
     padding: 2rem;
     animation: fadeInUp 1s ease-out;
 }
 
 .hero-title {
-    font-size: 3rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: var(--primary-color);
     margin-bottom: 1rem;
@@ -98,7 +616,7 @@
 }
 
 .hero-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     color: #555;
     margin-bottom: 2rem;
     line-height: 1.6;
@@ -113,20 +631,22 @@
 }
 
 .hero-btn {
-    padding: 1rem 2rem;
+    padding: 0.9rem 1.8rem;
     border-radius: 12px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     transition: var(--transition-normal);
     box-shadow: var(--shadow-medium);
-    display: inline-block;
-    min-width: 140px;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 150px;
+    justify-content: center;
 }
 
 .hero-btn:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-3px) scale(1.03);
     box-shadow: var(--shadow-strong);
 }
 
@@ -184,12 +704,27 @@
 }
 
 @media (max-width: 768px) {
+    .home-container-section {
+        padding: 1.5rem;
+        margin: 1.5rem 0.5rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .weather-summary-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
     .hero-title {
         font-size: 2rem;
     }
 
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
     .hero-buttons {
@@ -198,15 +733,96 @@
     }
 
     .hero-btn {
-        width: 200px;
+        width: 100%;
     }
 }
 </style>
 
 <footer>
     <div class="contacts">
-        <p>Contacts:7989332358| info@gunturmunicipal.gov</p>
-        <p>Address: mbts govt.polytechnic,nallapdu, Guntur,522005, AP.</p>
+        <p>Contacts: 7989332358 | info@municipalcorporation.gov</p>
+        <p>Address: GMRIT deemed to be university, Rajam, 532127, AP.</p>
     </div>
 </footer>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.L || !document.getElementById('home-report-map')) return;
+
+    const defaultLatLng = [16.3067, 80.4365];
+    const latInput = document.getElementById('home-report-lat');
+    const lngInput = document.getElementById('home-report-lng');
+    const coordsLabel = document.getElementById('home-selected-coords');
+    const map = L.map('home-report-map').setView(defaultLatLng, 13);
+    let marker = null;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function setHomeLocation(latlng) {
+        const lat = Number(latlng.lat).toFixed(6);
+        const lng = Number(latlng.lng).toFixed(6);
+        if (latInput) latInput.value = lat;
+        if (lngInput) lngInput.value = lng;
+        if (coordsLabel) {
+            coordsLabel.textContent = `✅ Location Selected: ${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+            coordsLabel.style.background = '#e8f5e9';
+            coordsLabel.style.color = '#2e7d32';
+            coordsLabel.style.borderColor = '#2e7d32';
+        }
+
+        if (marker) {
+            marker.setLatLng(latlng);
+            return;
+        }
+
+        marker = L.marker(latlng, { draggable: true }).addTo(map);
+        marker.on('dragend', function(event) {
+            setHomeLocation(event.target.getLatLng());
+        });
+    }
+
+    map.on('click', function(event) {
+        setHomeLocation(event.latlng);
+    });
+
+    const gpsBtn = document.getElementById('home-use-gps');
+    if (gpsBtn) {
+        gpsBtn.addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                if (coordsLabel) coordsLabel.textContent = '⚠️ Your browser does not support location access. Click the map instead.';
+                return;
+            }
+
+            if (coordsLabel) {
+                coordsLabel.textContent = '🔍 Locating your position via GPS...';
+                coordsLabel.style.background = '#e3f2fd';
+                coordsLabel.style.color = '#1976d2';
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const current = L.latLng(position.coords.latitude, position.coords.longitude);
+                    setHomeLocation(current);
+                    map.setView(current, 16);
+                },
+                function() {
+                    if (coordsLabel) {
+                        coordsLabel.textContent = '📍 GPS permission denied. Please click on the map to set location.';
+                        coordsLabel.style.background = '#ffebee';
+                        coordsLabel.style.color = '#d32f2f';
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            );
+        });
+    }
+});
+</script>
 {% endblock %}

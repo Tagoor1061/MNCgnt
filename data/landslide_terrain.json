@@ -1,0 +1,144 @@
+{
+    "status": "default",
+    "source": "bundled-default-dem",
+    "crs": "EPSG:4326",
+    "resolution_m": 30,
+    "extent": {
+        "min_lat": 15.8,
+        "max_lat": 16.6,
+        "min_lon": 79.9,
+        "max_lon": 80.9
+    },
+    "mean_elevation_m": 88.0,
+    "max_elevation_m": 438.0,
+    "mean_slope_deg": 12.6,
+    "max_slope_deg": 46.0,
+    "zones": [
+        {
+            "name": "Kotappakonda Hill Slopes",
+            "slope_deg": 42.0,
+            "elevation_m": 438.0,
+            "risk": "EXTREME",
+            "stability": "unstable",
+            "polygon": [
+                [
+                    16.196,
+                    79.982
+                ],
+                [
+                    16.24,
+                    80.022
+                ],
+                [
+                    16.212,
+                    80.062
+                ],
+                [
+                    16.168,
+                    80.014
+                ]
+            ]
+        },
+        {
+            "name": "Nagarjuna Sagar Foothills",
+            "slope_deg": 34.5,
+            "elevation_m": 182.0,
+            "risk": "HIGH",
+            "stability": "marginally stable",
+            "polygon": [
+                [
+                    16.42,
+                    79.92
+                ],
+                [
+                    16.465,
+                    79.958
+                ],
+                [
+                    16.438,
+                    80.004
+                ],
+                [
+                    16.392,
+                    79.962
+                ]
+            ]
+        },
+        {
+            "name": "Palnadu Escarpment",
+            "slope_deg": 31.2,
+            "elevation_m": 156.0,
+            "risk": "HIGH",
+            "stability": "marginally stable",
+            "polygon": [
+                [
+                    16.052,
+                    79.862
+                ],
+                [
+                    16.098,
+                    79.9
+                ],
+                [
+                    16.072,
+                    79.948
+                ],
+                [
+                    16.026,
+                    79.906
+                ]
+            ]
+        },
+        {
+            "name": "Guntur Urban Periphery Cut Slopes",
+            "slope_deg": 22.8,
+            "elevation_m": 61.0,
+            "risk": "MODERATE",
+            "stability": "stable (engineered)",
+            "polygon": [
+                [
+                    16.28,
+                    80.4
+                ],
+                [
+                    16.33,
+                    80.44
+                ],
+                [
+                    16.305,
+                    80.492
+                ],
+                [
+                    16.255,
+                    80.45
+                ]
+            ]
+        },
+        {
+            "name": "Krishna Delta Flatlands",
+            "slope_deg": 4.2,
+            "elevation_m": 12.0,
+            "risk": "LOW",
+            "stability": "stable",
+            "polygon": [
+                [
+                    16.14,
+                    80.52
+                ],
+                [
+                    16.205,
+                    80.566
+                ],
+                [
+                    16.178,
+                    80.64
+                ],
+                [
+                    16.112,
+                    80.592
+                ]
+            ]
+        }
+    ],
+    "fetched_at": "2026-08-23 22:36:33"
+}

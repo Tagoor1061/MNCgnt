@@ -5,76 +5,429 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-
-<section class="dashboard-section">
-    <div class="dashboard-header">
-        {% if current_user.role == 'admin' %}
-            <h2>Admin Dashboard</h2>
-            <p>Welcome, {{ current_user.username }}! You are logged in as <b>Admin</b>.</p>
-        {% else %}
-            <h2>User Dashboard</h2>
-            <p>Welcome, {{ current_user.username }}! You are logged in as <b>User</b>.</p>
-        {% endif %}
+<section class="container" style="padding: 2rem 1rem; max-width: 1200px; margin: 0 auto;">
+    <!-- Welcome Header -->
+    <div style="
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        padding: 2.5rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+    ">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                {% if current_user.role == 'admin' %}
+                    <div style="font-size: 2.5em; font-weight: 300; margin-bottom: 0.5rem;">👨‍💼 Admin Dashboard</div>
+                    <p style="font-size: 1.1em; margin: 0; opacity: 0.95;">Welcome back, {{ current_user.username }}! You have admin privileges.</p>
+                {% else %}
+                    <div style="font-size: 2.5em; font-weight: 300; margin-bottom: 0.5rem;">👤 User Dashboard</div>
+                    <p style="font-size: 1.1em; margin: 0; opacity: 0.95;">Welcome, {{ current_user.username }}! Ready to report an issue?</p>
+                {% endif %}
+            </div>
+            <div style="
+                background: rgba(255,255,255,0.2);
+                border-radius: 12px;
+                padding: 1.5rem;
+                text-align: center;
+                backdrop-filter: blur(10px);
+            ">
+                <div style="font-size: 0.9em; opacity: 0.9;">Role</div>
+                <div style="font-size: 1.8em; font-weight: bold; margin-top: 0.5rem;">{{ current_user.role|upper }}</div>
+            </div>
+        </div>
     </div>
 
-    <div class="dashboard-cards">
-        <div class="dashboard-card">
-            <h3>User Info</h3>
-            <p><b>Username:</b> {{ current_user.username }}</p>
-            <p><b>Email:</b> {{ current_user.email }}</p>
-            <p><b>Role:</b> {{ current_user.role|capitalize }}</p>
+    <!-- Notifications & Clear Reports Panel -->
+    {% if notifications %}
+    <div style="background: white; border-radius: 16px; padding: 1.8rem; box-shadow: 0 8px 32px rgba(0,0,0,0.08); margin-bottom: 2rem; border-left: 6px solid #2e7d32;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <h2 style="margin: 0; color: #2e7d32; font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem;">
+                🔔 Resolved Issues & Clear Reports
+            </h2>
+            <span style="background: #e8f5e9; color: #2e7d32; padding: 0.3rem 0.8rem; border-radius: 20px; font-weight: bold; font-size: 0.85rem;">
+                {{ notifications|length }} Alert(s)
+            </span>
         </div>
-        <div class="dashboard-card">
-            <h3>User Activity</h3>
-            <ul style="text-align:start;">
-                <li>Last login: {{ current_user.last_login if current_user.last_login else 'N/A' }}</li>
-                <li>Recent reports: {{ current_user.recent_reports }}</li>
-                <!-- Add more activity info as needed -->
-            </ul>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for notif in notifications %}
+                <div style="background: #f1f8e9; border-radius: 10px; padding: 1.2rem; border: 1px solid #c3e6cb;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <strong style="color: #1b5e20; font-size: 1.05rem;">✅ {{ notif.title }}</strong>
+                        <span style="color: #666; font-size: 0.85rem;">📅 {{ notif.created_at.strftime('%d %b %Y, %I:%M %p') if notif.created_at else '' }}</span>
+                    </div>
+                    <p style="margin: 0; color: #333; font-size: 0.98rem; line-height: 1.5;">{{ notif.message }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Stats Cards Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <!-- User Info Card -->
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-top: 4px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        "
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 25px rgba(0,0,0,0.15)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="
+                    font-size: 2.5em;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                ">👤</div>
+                <h3 style="margin: 0; color: #1976d2;">User Information</h3>
+            </div>
+            <div style="
+                background: #f5f5f5;
+                border-radius: 8px;
+                padding: 1rem;
+                font-size: 0.95em;
+            ">
+                <div style="margin-bottom: 0.8rem;">
+                    <span style="color: #666; font-weight: 500;">Username</span><br/>
+                    <span style="font-size: 1.1em; font-weight: bold; color: #333;">{{ current_user.username }}</span>
+                </div>
+                <div style="margin-bottom: 0.8rem;">
+                    <span style="color: #666; font-weight: 500;">Email</span><br/>
+                    <span style="font-size: 1em; color: #555;">{{ current_user.email }}</span>
+                </div>
+                <div>
+                    <span style="color: #666; font-weight: 500;">Account Type</span><br/>
+                    <span style="
+                        display: inline-block;
+                        background: {% if current_user.role == 'admin' %}#d32f2f{% else %}#2e7d32{% endif %};
+                        color: white;
+                        padding: 0.4rem 0.8rem;
+                        border-radius: 20px;
+                        font-size: 0.85em;
+                        font-weight: bold;
+                        margin-top: 0.3rem;
+                    ">{{ current_user.role|capitalize }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Card -->
+        <div style="
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-top: 4px solid #00897b;
+            transition: transform 0.3s, box-shadow 0.3s;
+        "
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 25px rgba(0,0,0,0.15)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="font-size: 2.5em;">📊</div>
+                <h3 style="margin: 0; color: #00897b;">Activity Overview</h3>
+            </div>
+            <div style="
+                background: #f5f5f5;
+                border-radius: 8px;
+                padding: 1rem;
+                font-size: 0.95em;
+            ">
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ddd;">
+                    <div style="color: #666; font-weight: 500; margin-bottom: 0.3rem;">Last Login</div>
+                    <div style="font-size: 1.1em; color: #333; font-weight: bold;">
+                        {% if current_user.last_login %}
+                            {{ current_user.last_login.strftime('%d %b %Y, %I:%M %p') if current_user.last_login else 'N/A' }}
+                        {% else %}
+                            First time here! 🎉
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div style="color: #666; font-weight: 500; margin-bottom: 0.3rem;">Reports Submitted</div>
+                    <div style="font-size: 1.8em; font-weight: bold; color: #00897b;">
+                        {{ current_user.recent_reports if current_user.recent_reports else 0 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div style="
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            color: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        "
+        onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 12px 25px rgba(0,0,0,0.15)'"
+        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div style="font-size: 2.5em;">⚡</div>
+                <h3 style="margin: 0;">Quick Access</h3>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <a href="{{ url_for('viewmap.view_map') }}?select=1" style="
+                    display: inline-block;
+                    background: rgba(255,255,255,0.25);
+                    color: white;
+                    padding: 0.7rem 1rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    text-align: center;
+                    transition: all 0.3s;
+                    border: 1px solid rgba(255,255,255,0.5);
+                    font-weight: 500;
+                " onmouseover="this.style.background='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">
+                    📍 Select Location
+                </a>
+                <a href="{{ url_for('news.news') }}" style="
+                    display: inline-block;
+                    background: rgba(255,255,255,0.25);
+                    color: white;
+                    padding: 0.7rem 1rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    text-align: center;
+                    transition: all 0.3s;
+                    border: 1px solid rgba(255,255,255,0.5);
+                    font-weight: 500;
+                " onmouseover="this.style.background='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">
+                    📰 View News
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="report-box">
-        <h3>Report an Issue</h3>
+    <!-- Report Issue Section -->
+    <div style="
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    ">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <div style="font-size: 2.5em;">📝</div>
+            <h2 style="margin: 0; color: #1976d2; font-size: 1.8em;">Report an Issue</h2>
+        </div>
+
         <form method="post" action="{{ url_for('main.report_issue') }}">
-            <textarea name="issue" placeholder="Describe your issue here..." required></textarea>
-            <input type="hidden" name="latitude" id="report-lat" value="{{ request.args.get('latitude', '') }}">
-            <input type="hidden" name="longitude" id="report-lng" value="{{ request.args.get('longitude', '') }}">
-            {% if request.args.get('latitude') and request.args.get('longitude') %}
-            <div style="margin-block-end:0.5rem;color:#2E8B57;font-weight:bold;">
-                Selected: {{ request.args.get('latitude')|float|round(5) }}, {{ request.args.get('longitude')|float|round(5) }}
+            <!-- Issue Description -->
+            <div style="margin-bottom: 2rem;">
+                <label style="
+                    display: block;
+                    font-weight: 600;
+                    color: #333;
+                    margin-bottom: 0.8rem;
+                    font-size: 1.05em;
+                ">Describe Your Issue</label>
+                <textarea name="issue" placeholder="Tell us about the flooding, waterlogging, or emergency you're experiencing..." required style="
+                    width: 100%;
+                    min-height: 120px;
+                    padding: 1rem;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font-size: 1em;
+                    resize: vertical;
+                    transition: border-color 0.3s;
+                "
+                onmouseover="this.style.borderColor='#667eea'"
+                onmouseout="this.style.borderColor='#e0e0e0'"
+                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102, 126, 234, 0.1)'"
+                onblur="this.style.boxShadow='none'"></textarea>
             </div>
-            {% endif %}
-            <a href="{{ url_for('viewmap.view_map') }}?select=1" class="btn" style="margin-block:0.5rem;">Select Location</a>
-            <span id="selected-coords" style="display:none;font-size:0.95em;color:#2E8B57;"></span>
-            <button type="submit">Submit Report</button>
+
+            <!-- Location Section -->
+            <div style="
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                border-radius: 12px;
+                padding: 2rem;
+                margin-bottom: 2rem;
+            ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="margin: 0; color: #333; font-size: 1.2em;">📍 Report Location</h3>
+                    <button type="button" id="use-current-location" style="
+                        background: #667eea;
+                        color: white;
+                        border: none;
+                        padding: 0.7rem 1.5rem;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                        transition: all 0.3s;
+                    "
+                    onmouseover="this.style.background='#764ba2'; this.style.transform='scale(1.05)'"
+                    onmouseout="this.style.background='#667eea'; this.style.transform='scale(1)'">
+                        📌 Use Current Location
+                    </button>
+                </div>
+
+                <div id="report-map" style="
+                    height: 300px;
+                    border-radius: 8px;
+                    margin-bottom: 1rem;
+                    border: 2px solid rgba(255,255,255,0.8);
+                "></div>
+
+                <div id="selected-coords" style="
+                    background: white;
+                    border-radius: 8px;
+                    padding: 1rem;
+                    text-align: center;
+                    color: #666;
+                    font-weight: 500;
+                    border: 1px solid #e0e0e0;
+                ">
+                    💡 Click on the map to select the exact issue location
+                </div>
+
+                <input type="hidden" name="latitude" id="report-lat" value="{{ request.args.get('latitude', '') }}">
+                <input type="hidden" name="longitude" id="report-lng" value="{{ request.args.get('longitude', '') }}">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" style="
+                width: 100%;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 1rem;
+                border-radius: 8px;
+                font-size: 1.1em;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            "
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
+                ✅ Submit Issue Report
+            </button>
         </form>
-        <!-- Location Modal -->
-        <div id="location-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.4);">
-            <div style="background:#fff;max-inline-size:420px;margin:5% auto;padding:1.5rem;border-radius:10px;box-shadow:0 2px 10px #0002;position:relative;">
-                <h4 style="margin-block-end:0.5rem;">Select Location on Map</h4>
-                <div id="select-map" style="inline-size:360px;block-size:300px;border-radius:8px;"></div>
-                <button type="button" onclick="closeLocationModal()" style="margin-block-start:1rem;">Done</button>
-            </div>
-        </div>
     </div>
 
-    <a href="{{ url_for('main.home') }}" title="Home" style="margin-inline-end:1.5rem;font-size:1.5em;vertical-align:middle;">🏠</a>
-    <a href="{{ url_for('auth.logout') }}" class="logout-btn">Logout</a>
+    <!-- Navigation Buttons -->
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{{ url_for('main.home') }}" style="
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            transition: all 0.3s;
+            cursor: pointer;
+        "
+        onmouseover="this.style.background='#667eea'; this.style.color='white'; this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.background='white'; this.style.color='#667eea'; this.style.transform='translateY(0)'">
+            🏠 Back to Home
+        </a>
+        <a href="{{ url_for('auth.logout') }}" style="
+            display: inline-block;
+            background: #d32f2f;
+            color: white;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: 2px solid #d32f2f;
+            transition: all 0.3s;
+            cursor: pointer;
+        "
+        onmouseover="this.style.background='#b71c1c'; this.style.transform='translateY(-2px)'"
+        onmouseout="this.style.background='#d32f2f'; this.style.transform='translateY(0)'">
+            🚪 Logout
+        </a>
+    </div>
 </section>
 {% endblock %}
 
 {% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// Show selected coordinates if present
-window.onload = function() {
-    var lat = document.getElementById('report-lat').value;
-    var lng = document.getElementById('report-lng').value;
-    if (lat && lng) {
-        var coords = document.getElementById('selected-coords');
-        coords.style.display = 'inline';
-        coords.textContent = `Selected: ${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}`;
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.L || !document.getElementById('report-map')) return;
+
+    const defaultLatLng = [16.3067, 80.4365];
+    const latInput = document.getElementById('report-lat');
+    const lngInput = document.getElementById('report-lng');
+    const coordsLabel = document.getElementById('selected-coords');
+    const map = L.map('report-map').setView(defaultLatLng, 13);
+    let marker = null;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function setLocation(latlng) {
+        const lat = Number(latlng.lat).toFixed(6);
+        const lng = Number(latlng.lng).toFixed(6);
+        latInput.value = lat;
+        lngInput.value = lng;
+        coordsLabel.textContent = `✅ Location Selected: ${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+        coordsLabel.style.background = '#e8f5e9';
+        coordsLabel.style.color = '#2e7d32';
+        coordsLabel.style.borderColor = '#2e7d32';
+
+        if (marker) {
+            marker.setLatLng(latlng);
+            return;
+        }
+
+        marker = L.marker(latlng, { draggable: true }).addTo(map);
+        marker.on('dragend', function(event) {
+            setLocation(event.target.getLatLng());
+        });
     }
-}
+
+    map.on('click', function(event) {
+        setLocation(event.latlng);
+    });
+
+    if (latInput.value && lngInput.value) {
+        const existing = L.latLng(Number(latInput.value), Number(lngInput.value));
+        setLocation(existing);
+        map.setView(existing, 16);
+    }
+
+    document.getElementById('use-current-location').addEventListener('click', function() {
+        if (!navigator.geolocation) {
+            coordsLabel.textContent = '⚠️ Your browser does not support location access. Click the map instead.';
+            coordsLabel.style.background = '#fff3e0';
+            coordsLabel.style.color = '#e65100';
+            return;
+        }
+
+        coordsLabel.textContent = '🔍 Finding your current location...';
+        coordsLabel.style.background = '#e3f2fd';
+        coordsLabel.style.color = '#1976d2';
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const current = L.latLng(position.coords.latitude, position.coords.longitude);
+                setLocation(current);
+                map.setView(current, 16);
+            },
+            function() {
+                coordsLabel.textContent = '📍 Location permission was denied. Click the map to choose manually.';
+                coordsLabel.style.background = '#ffebee';
+                coordsLabel.style.color = '#d32f2f';
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+        );
+    });
+});
 </script>
 {% endblock %}

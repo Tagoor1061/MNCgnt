@@ -1,0 +1,12 @@
+{
+    "status": "default",
+    "source": "USGS Earthquake Catalog (FDSN)",
+    "window_days": 30,
+    "radius_km": 500,
+    "events": [],
+    "event_count": 0,
+    "max_magnitude": 0.0,
+    "trigger_score": 0,
+    "trigger_active": false,
+    "fetched_at": "2026-08-23 22:36:31"
+}

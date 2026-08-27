@@ -1,0 +1,31 @@
+{
+    "disaster": "tsunamis",
+    "ocean_threat_status": "NO THREAT",
+    "buoy_station": "Bay of Bengal Deep Sea Station 23001",
+    "sea_level_anomaly_m": 0.05,
+    "coastal_tsunami_zones": [
+        {
+            "name": "Nizampatnam Bay Coastal Zone",
+            "risk": "Normal Watch",
+            "color": "#00838f",
+            "polygon": [
+                [
+                    15.85,
+                    80.6
+                ],
+                [
+                    15.95,
+                    80.7
+                ],
+                [
+                    15.9,
+                    80.78
+                ],
+                [
+                    15.8,
+                    80.68
+                ]
+            ]
+        }
+    ]
+}

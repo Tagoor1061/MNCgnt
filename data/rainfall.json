@@ -1,0 +1,55 @@
+{
+    "disaster": "rainfall",
+    "precipitation_mm_24h": 85.4,
+    "intensity": "Heavy Rainfall Warning (ORANGE ALERT)",
+    "active_downpour_zones": 3,
+    "rain_gauge_station": "Guntur Municipal Meteorological Anemometer",
+    "rainfall_zones": [
+        {
+            "name": "Central Guntur & Urban Drainage Belt",
+            "risk": "Heavy Downpour (70-110 mm)",
+            "color": "#0288d1",
+            "polygon": [
+                [
+                    16.28,
+                    80.4
+                ],
+                [
+                    16.34,
+                    80.48
+                ],
+                [
+                    16.31,
+                    80.52
+                ],
+                [
+                    16.24,
+                    80.44
+                ]
+            ]
+        },
+        {
+            "name": "Tenali & Delta Canal Catchment",
+            "risk": "Very Heavy Rainfall (110+ mm)",
+            "color": "#01579b",
+            "polygon": [
+                [
+                    16.2,
+                    80.6
+                ],
+                [
+                    16.27,
+                    80.68
+                ],
+                [
+                    16.22,
+                    80.72
+                ],
+                [
+                    16.15,
+                    80.64
+                ]
+            ]
+        }
+    ]
+}

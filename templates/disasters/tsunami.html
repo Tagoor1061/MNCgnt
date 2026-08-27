@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Tsunami Warnings & Coastal Safety{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        TSUNAMI EARLY WARNING & COASTAL SAFETY PORTAL
+        <span class="sub-text">Indian Ocean Tsunami Early Warning System (ITEWS) Alerts & High-Ground Evacuation Maps</span>
+    </div>
+</div>
+
+<div class="disaster-detail-container">
+    <div class="detail-hero hero-tsunami">
+        <div class="hero-badge-item"><i class="fas fa-water"></i> Coastal Disaster Unit</div>
+        <h1>🌊 Tsunami Warnings & Coastal Safety</h1>
+        <p>Real-time seismic ocean monitoring, Indian Ocean Tsunami Early Warning System (ITEWS) alerts, evacuation route maps, and coastal safety protocols.</p>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="status-card-box">
+        <div class="status-info">
+            <h3><i class="fas fa-broadcast-tower"></i> Tsunami Monitoring Status</h3>
+            <p>Monitored 24x7 by Indian National Centre for Ocean Information Services (INCOIS) & SDMA.</p>
+            <div class="status-pills">
+                <span class="pill pill-green"><i class="fas fa-check-circle"></i> Bay of Bengal Tsunami Threat: NO THREAT</span>
+                <span class="pill pill-blue"><i class="fas fa-water"></i> Sea Level Status: Normal Tide Level</span>
+            </div>
+        </div>
+        <div class="status-actions">
+            <a href="{{ url_for('viewmap.view_map') }}" class="btn-detail-action btn-blue"><i class="fas fa-map-marked-alt"></i> Coastal Risk Map</a>
+            <button class="btn-detail-action btn-green" onclick="subscribeToNotifications()"><i class="fas fa-bell"></i> Enable Emergency Push Alerts</button>
+        </div>
+    </div>
+
+    <!-- Machine Learning Analytics & Predictive Chart -->
+    <div class="disaster-chart-widget" data-disaster="tsunamis" id="chart-widget-tsunamis"></div>
+
+    <!-- Key Information Grid -->
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="card-head text-cyan"><i class="fas fa-water"></i> Natural Warning Signs</div>
+            <ul>
+                <li><strong>Undersea Earthquake:</strong> Strong coastal tremors lasting more than 20 seconds.</li>
+                <li><strong>Rapid Sea Recession:</strong> Sudden, unusual drop in sea level exposing the ocean floor.</li>
+                <li><strong>Roaring Ocean Sound:</strong> Loud roaring sound coming from the deep sea.</li>
+                <li><strong>Abnormal Waves:</strong> Unusually high, rapid cresting wave series approaching shore.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-blue"><i class="fas fa-running"></i> High-Ground Evacuation</div>
+            <ul>
+                <li>Immediately move inland or to elevated ground at least 15–30 meters above sea level.</li>
+                <li>Do NOT stay on beaches to watch approaching tsunami waves.</li>
+                <li>Follow designated blue evacuation signs along coastal highways and fishing villages.</li>
+                <li>Stay away from river mouths and coastal streams flowing into the ocean.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-green"><i class="fas fa-phone-alt"></i> Tsunami Helplines</div>
+            <div class="contact-list">
+                <div class="contact-line"><span>INCOIS Tsunami Center:</span> <strong>040-23895006</strong></div>
+                <div class="contact-line"><span>State Emergency Ops (SDMA):</span> <strong>1070</strong></div>
+                <div class="contact-line"><span>Marine Police Control Room:</span> <strong>1093</strong></div>
+                <div class="contact-line"><span>GMC Disaster Helpline:</span> <strong>1800-425-0001</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Steps -->
+    <div class="safety-steps-box">
+        <h2><i class="fas fa-shield-alt"></i> Tsunami Emergency Response Guidelines</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>1. Immediate Action</h3>
+                <p>If you feel a severe coastal earthquake or see sudden sea drawdown, head inland immediately without waiting for official warnings.</p>
+            </div>
+            <div class="step-item">
+                <h3>2. During Tsunami Wave</h3>
+                <p>Remember that a tsunami consists of a series of waves over several hours. The first wave is rarely the largest or most destructive.</p>
+            </div>
+            <div class="step-item">
+                <h3>3. Post-Tsunami Recovery</h3>
+                <p>Stay on high ground until official "ALL CLEAR" is issued by SDMA. Avoid drinking contaminated coastal tap water.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons-row">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report Damage to Government</a>
+    </div>
+</div>
+
+<style>
+.disaster-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.detail-hero {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.hero-tsunami {
+    background: linear-gradient(135deg, #00838f 0%, #00acc1 100%);
+}
+
+.hero-badge-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.detail-hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.8rem 0;
+}
+
+.detail-hero p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.status-card-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1.8rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.status-info h3 {
+    margin: 0 0 0.4rem 0;
+    color: #2c3e50;
+}
+
+.status-info p {
+    margin: 0 0 0.8rem 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-pills {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pill-green { background: #e8f5e9; color: #2e7d32; }
+.pill-blue { background: #e3f2fd; color: #1565c0; }
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-detail-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-blue { background: #00838f; }
+.btn-green { background: #2e7d32; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card-head {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.text-cyan { color: #00838f; }
+.text-blue { color: #1565c0; }
+.text-green { color: #2e7d32; }
+
+.info-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 0.93rem;
+}
+
+.contact-line {
+    background: #e8f5e9;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    color: #1b5e20;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.safety-steps-box {
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.safety-steps-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.step-item h3 {
+    margin: 0 0 0.6rem 0;
+    color: #00838f;
+    font-size: 1.15rem;
+}
+
+.step-item p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.nav-buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-nav-back {
+    background: white;
+    color: #00838f;
+    border: 2px solid #00838f;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-nav-report {
+    background: #00838f;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+</style>
+{% endblock %}

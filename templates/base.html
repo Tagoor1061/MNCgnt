@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Guntur Municipal Corporation{% endblock %}</title>
+    <title>{% block title %}Suraksha Kavach — Shielding Lives from Every Hazard | Guntur Municipal Corporation{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/effects3d.css') }}?v=3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body class="{% block body_class %}{% endblock %}">
     <div id="loading-overlay">
-        <video autoplay muted loop>
-            <source src="{{ url_for('static', filename='img/load.mp4') }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p class="loading-text">Loading Suraksha Kavach...</p>
+        </div>
     </div>
     <main>
     {% block content %}{% endblock %}
     </main>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/DisasterChartComponent.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/effects3d.js') }}?v=1"></script>
     <script>
         // Service Worker Registration for Push Notifications
         if ('serviceWorker' in navigator) {
@@ -32,11 +38,16 @@
 
         // Push Notification Subscription
         function subscribeToNotifications() {
+            const vapidPublicKey = '{{ vapid_public_key|default("") }}';
+            if (!vapidPublicKey) {
+                console.log('Push notifications are not configured: missing VAPID public key.');
+                return;
+            }
             if ('serviceWorker' in navigator && 'PushManager' in window) {
                 navigator.serviceWorker.ready.then(function(registration) {
                     registration.pushManager.subscribe({
                         userVisibleOnly: true,
-                        applicationServerKey: urlB64ToUint8Array('{{ vapid_public_key|default("") }}')
+                        applicationServerKey: urlB64ToUint8Array(vapidPublicKey)
                     }).then(function(subscription) {
                         console.log('User is subscribed:', subscription);
                         fetch('/push/subscribe', {
@@ -73,5 +84,6 @@
             subscribeToNotifications();
         }
     </script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

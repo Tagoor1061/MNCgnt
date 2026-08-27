@@ -1,0 +1,94 @@
+{
+    "system_id": "BOB-01-2025",
+    "issued_at": "2025-05-20T06:00:00Z",
+    "wind_warning_zones_count": 3,
+    "warning_zones": [
+        {
+            "zone_id": "WIND_RED",
+            "level": "Red Warning (Extremely Heavy Wind)",
+            "wind_speed_range_kmh": "100-130 km/h",
+            "affected_districts": [
+                "Guntur Coastal",
+                "Bapatla",
+                "Krishna"
+            ],
+            "color": "#d32f2f",
+            "polygon": [
+                [
+                    15.5,
+                    80.2
+                ],
+                [
+                    16.4,
+                    80.2
+                ],
+                [
+                    16.4,
+                    81.1
+                ],
+                [
+                    15.5,
+                    81.1
+                ]
+            ]
+        },
+        {
+            "zone_id": "WIND_ORANGE",
+            "level": "Orange Warning (High Wind)",
+            "wind_speed_range_kmh": "70-100 km/h",
+            "affected_districts": [
+                "Prakasam",
+                "West Godavari",
+                "NTR District"
+            ],
+            "color": "#ff9800",
+            "polygon": [
+                [
+                    15.0,
+                    79.8
+                ],
+                [
+                    16.8,
+                    79.8
+                ],
+                [
+                    16.8,
+                    81.6
+                ],
+                [
+                    15.0,
+                    81.6
+                ]
+            ]
+        },
+        {
+            "zone_id": "WIND_YELLOW",
+            "level": "Yellow Warning (Moderate Gale)",
+            "wind_speed_range_kmh": "50-70 km/h",
+            "affected_districts": [
+                "Eluru",
+                "Palnadu",
+                "Nellore"
+            ],
+            "color": "#fbc02d",
+            "polygon": [
+                [
+                    14.5,
+                    79.2
+                ],
+                [
+                    17.2,
+                    79.2
+                ],
+                [
+                    17.2,
+                    82.2
+                ],
+                [
+                    14.5,
+                    82.2
+                ]
+            ]
+        }
+    ]
+}

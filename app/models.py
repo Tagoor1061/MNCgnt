@@ -7,6 +7,7 @@ class User(UserMixin, db.Model):  # type: ignore
     id = db.Column(db.Integer, primary_key=True)  # type: ignore
     username = db.Column(db.String(50), unique=True, nullable=False)  # type: ignore
     email = db.Column(db.String(120), unique=True, nullable=False)  # type: ignore
+    phone = db.Column(db.String(20), nullable=True)  # type: ignore
     password_hash = db.Column(db.String(128), nullable=False)  # type: ignore
     role = db.Column(db.String(20), default="user")  # type: ignore  # "admin" or "user"
     last_login = db.Column(db.DateTime, nullable=True)  # type: ignore
@@ -70,3 +71,42 @@ class PushSubscription(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref=db.backref('push_subscriptions', lazy=True))
+
+class ZoneMarking(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), default='Zone Marking')
+    risk_level = db.Column(db.String(20), nullable=False, default='safe')  # 'safe', 'moderate', 'danger'
+    color = db.Column(db.String(20), nullable=False, default='green')       # 'green', 'yellow', 'red' or hex
+    shape_type = db.Column(db.String(20), nullable=False)                    # 'pencil', 'marker', 'polygon', 'circle', 'rectangle'
+    geojson_data = db.Column(db.Text, nullable=False)                        # JSON string containing coordinates & properties
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+
+    created_by = db.relationship('User', backref=db.backref('zone_markings', lazy=True))
+
+    def to_dict(self):
+        import json
+        try:
+            geo_data = json.loads(self.geojson_data) if self.geojson_data else {}
+        except Exception:
+            geo_data = {}
+        return {
+            'id': self.id,
+            'title': self.title,
+            'risk_level': self.risk_level,
+            'color': self.color,
+            'shape_type': self.shape_type,
+            'geojson_data': geo_data,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'created_by': self.created_by.username if self.created_by else 'Admin'
+        }
+
+class UserNotification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+
+    user = db.relationship('User', backref=db.backref('notifications', lazy=True))

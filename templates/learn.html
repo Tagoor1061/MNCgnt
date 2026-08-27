@@ -1,0 +1,727 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Learn & Quiz — Disaster Education Hub | Guntur Municipal Corporation{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        DISASTER EDUCATION & CITIZEN AWARENESS HUB
+        <span class="sub-text">Watch. Learn. Get Quizzed. Be Ready for Every Hazard.</span>
+    </div>
+</div>
+
+<div class="learn-container">
+
+    <!-- Hero -->
+    <div class="detail-hero hero-learn">
+        <div class="hero-badge-item"><i class="fas fa-graduation-cap"></i> Citizen Academy</div>
+        <h1>📚 Learn & Quiz — Disaster Education Hub</h1>
+        <p>Watch short expert videos on every natural hazard, then test yourself with interactive quizzes.
+           Earn your readiness score and become a certified Suraksha Kavach citizen.</p>
+    </div>
+
+    <!-- ================= VIDEO LIBRARY ================= -->
+    <h2 class="section-title"><i class="fas fa-photo-video" style="color:#5d4037;"></i> Educational Video Library</h2>
+    <p class="section-sub">Tap any card to watch a curated safety video on that topic (opens in a player below).</p>
+
+    <div class="video-grid" id="video-grid"><!-- cards injected by JS --></div>
+
+    <!-- Video player modal -->
+    <div id="video-modal" class="sk-modal" hidden>
+        <div class="sk-modal-backdrop" data-close></div>
+        <div class="sk-modal-card" role="dialog" aria-modal="true">
+            <button class="sk-modal-close" data-close aria-label="Close">&times;</button>
+            <div class="sk-modal-frame"><iframe id="video-frame" src="" title="Disaster safety video"
+                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                 allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+            <p class="sk-modal-note"><i class="fas fa-info-circle"></i>
+               Playing top community result from YouTube for this topic. Always follow official NDMA/SDMA guidance.</p>
+        </div>
+    </div>
+
+    <!-- ================= QUIZ ARENA ================= -->
+    <h2 class="section-title" style="margin-top:3rem;"><i class="fas fa-brain" style="color:#1565c0;"></i> Disaster Readiness Quiz Arena</h2>
+    <p class="section-sub">Pick a topic, answer the questions, get instant explanations — and beat your best score!</p>
+
+    <div class="quiz-shell info-card">
+        <!-- Topic picker -->
+        <div id="quiz-start">
+            <h3 style="margin-top:0;">🎯 Choose Your Challenge</h3>
+            <div class="quiz-topic-grid" id="quiz-topics"></div>
+            <p style="color:#777; font-size:.85rem; margin-bottom:0;">
+                <i class="fas fa-trophy" style="color:#f9a825;"></i>
+                Best scores are saved on this device:
+                <strong id="best-scores-line">—</strong>
+            </p>
+        </div>
+
+        <!-- Question view -->
+        <div id="quiz-play" hidden>
+            <div class="quiz-progress-row">
+                <span id="quiz-counter" class="quiz-counter">Q 1 / 6</span>
+                <div class="quiz-progress-track"><div id="quiz-progress-bar" class="quiz-progress-fill"></div></div>
+                <span id="quiz-score-live" class="quiz-score-live">Score 0</span>
+            </div>
+            <h3 id="quiz-question" class="quiz-question">…</h3>
+            <div id="quiz-options" class="quiz-options"></div>
+            <div id="quiz-feedback" class="quiz-feedback" hidden></div>
+            <button id="quiz-next-btn" class="btn-detail-action btn-green quiz-next" hidden>
+                Next Question <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Result view -->
+        <div id="quiz-result" hidden style="text-align:center;">
+            <div id="result-emoji" style="font-size:4rem; line-height:1;">🏆</div>
+            <h3 id="result-headline" style="margin:0.6rem 0 0.3rem;">Excellent!</h3>
+            <p id="result-score" style="font-size:1.35rem; font-weight:800; color:#1565c0; margin:0 0 0.4rem;"></p>
+            <p id="result-message" style="color:#555; max-width:520px; margin:0 auto 1rem;"></p>
+            <p id="result-best" style="font-size:.85rem; color:#888; margin:0 0 1.2rem;"></p>
+            <div style="display:flex; gap:0.8rem; justify-content:center; flex-wrap:wrap;">
+                <button id="quiz-retry" class="btn-detail-action btn-blue"><i class="fas fa-redo"></i> Try Again</button>
+                <button id="quiz-home" class="btn-detail-action btn-nav-back2"><i class="fas fa-list"></i> Choose Another Topic</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety note -->
+    <div class="info-card" style="margin-top:2rem; border-left:5px solid #ff8f1f;">
+        <div class="card-head" style="color:#b26a00;"><i class="fas fa-lightbulb"></i> Remember</div>
+        <p style="margin:0; color:#444; line-height:1.7;">
+            Videos and quizzes here build awareness — they never replace official instructions.
+            In a real emergency, always follow alerts from <strong>NDMA (1078)</strong>,
+            <strong>SDMA (1070)</strong>, Police (<strong>100/112</strong>), Fire (<strong>101</strong>)
+            and Ambulance (<strong>108</strong>), and guidance from Guntur Municipal Corporation.
+        </p>
+    </div>
+
+    <div class="nav-buttons-row" style="margin-top:2rem;">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report a Hazard</a>
+    </div>
+</div>
+
+<style>
+.learn-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.hero-learn { background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%); }
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #22303c;
+    font-size: 1.45rem;
+    margin: 0 0 0.3rem;
+}
+
+.section-sub { color: #66788a; margin: 0 0 1.4rem; font-size: 0.98rem; }
+
+/* ---------- Video grid ---------- */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.4rem;
+}
+
+.video-card {
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.video-thumb {
+    position: relative;
+    height: 170px;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.9rem;
+}
+
+.video-thumb .vt-icon {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.7rem;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    transition: transform .25s ease;
+}
+
+.video-card:hover .vt-icon { transform: scale(1.12); }
+
+.video-thumb .vt-play {
+    position: absolute;
+    bottom: 10px; right: 12px;
+    background: rgba(0,0,0,0.65);
+    color: #fff;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.video-meta h3 { margin: 0 0 0.3rem; color: #22303c; font-size: 1.08rem; }
+.video-meta p { margin: 0; color: #5d6d7a; font-size: 0.88rem; line-height: 1.55; }
+
+/* ---------- Modal ---------- */
+.sk-modal { position: fixed; inset: 0; z-index: 2000; }
+.sk-modal[hidden] { display: none; }
+.sk-modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(8, 20, 14, 0.78);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+.sk-modal-card {
+    position: relative;
+    max-width: 900px;
+    margin: 4vh auto;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+}
+.sk-modal-close {
+    position: absolute; top: -14px; right: -14px;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: #d32f2f; color: #fff;
+    font-size: 1.3rem; line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+.sk-modal-frame { position: relative; padding-top: 56.25%; border-radius: 10px; overflow: hidden; background: #000; }
+.sk-modal-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.sk-modal-note { margin: 0.7rem 0.2rem 0.2rem; color: #66788a; font-size: 0.82rem; }
+
+/* ---------- Quiz ---------- */
+.quiz-shell { padding: 1.6rem 1.8rem; }
+
+.quiz-topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.9rem;
+    margin: 1rem 0 1.4rem;
+}
+
+.quiz-topic-btn {
+    border: 1px solid rgba(16,42,67,0.10);
+    background: linear-gradient(180deg,#ffffff,#f6faf7);
+    border-radius: 12px;
+    padding: 0.95rem 1rem;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(16,42,67,0.06);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    font-family: inherit;
+}
+
+.quiz-topic-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(16,42,67,0.13);
+    border-color: #2e7d32;
+}
+
+.quiz-topic-btn .qt-emoji { font-size: 1.6rem; }
+.quiz-topic-btn .qt-name { font-weight: 800; color: #22303c; display: block; margin-top: 0.25rem; }
+.quiz-topic-btn .qt-count { font-size: 0.78rem; color: #66788a; }
+.quiz-topic-btn .qt-best { font-size: 0.75rem; color: #b26a00; font-weight: 700; }
+
+.quiz-progress-row {
+    display: flex; align-items: center; gap: 0.9rem;
+    margin-bottom: 1.1rem;
+}
+.quiz-counter { font-weight: 800; color: #37474f; white-space: nowrap; }
+.quiz-progress-track {
+    flex: 1; height: 10px; border-radius: 6px;
+    background: #eceff1; overflow: hidden;
+}
+.quiz-progress-fill {
+    height: 100%; width: 0%;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #2e7d32, #ff8f1f);
+    transition: width .35s ease;
+}
+.quiz-score-live { font-weight: 800; color: #1565c0; white-space: nowrap; }
+
+.quiz-question { color: #22303c; font-size: 1.18rem; line-height: 1.5; margin: 0 0 1rem; }
+
+.quiz-options { display: grid; gap: 0.65rem; }
+
+.quiz-opt {
+    display: flex; align-items: center; gap: 0.7rem;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 0.97rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(16,42,67,0.12);
+    background: #fff;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.quiz-opt:hover:not(:disabled) {
+    transform: translateX(4px);
+    border-color: #2e7d32;
+    background: #f4fbf5;
+}
+
+.quiz-opt .opt-key {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: #eceff1; color: #37474f;
+    font-weight: 800; font-size: 0.85rem;
+}
+
+.quiz-opt.correct { border-color: #2e7d32 !important; background: #e8f5e9 !important; }
+.quiz-opt.correct .opt-key { background: #2e7d32; color: #fff; }
+.quiz-opt.wrong { border-color: #d32f2f !important; background: #ffebee !important; }
+.quiz-opt.wrong .opt-key { background: #d32f2f; color: #fff; }
+.quiz-opt:disabled { cursor: default; opacity: 0.92; }
+
+.quiz-feedback {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+.quiz-feedback.good { background: #e8f5e9; border-left: 4px solid #2e7d32; color: #1b5e20; }
+.quiz-feedback.bad  { background: #ffebee; border-left: 4px solid #d32f2f; color: #b71c1c; }
+
+.quiz-next { margin-top: 1.1rem; }
+.btn-nav-back2 {
+    background: #fff; color: #1565c0;
+    border: 2px solid #1565c0;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+    .learn-container { padding: 1.2rem; }
+    .quiz-shell { padding: 1.1rem; }
+}
+</style>
+
+<script>
+/* ============================================================
+   Learn & Quiz — video library + quiz engine (vanilla JS)
+   ============================================================ */
+(function () {
+    'use strict';
+
+    /* ---------------- Video library ---------------- */
+    var VIDEOS = [
+        { emoji: '🌀', name: 'Cyclone Preparedness',
+          desc: 'How cyclone warnings work, when to evacuate, and how to protect your home before landfall.',
+          query: 'cyclone preparedness safety tips India',
+          grad: 'linear-gradient(135deg,#e65100,#ffb74d)' },
+        { emoji: '🌊', name: 'Flood Safety Essentials',
+          desc: 'Never walk or drive through floodwater — learn depth dangers, sandbagging and evacuation basics.',
+          query: 'flood safety tips what to do',
+          grad: 'linear-gradient(135deg,#1565c0,#64b5f6)' },
+        { emoji: '🏚️', name: 'Earthquake Drill: Drop, Cover, Hold',
+          desc: 'The life-saving three-step drill everyone must practise — at home, school and office.',
+          query: 'drop cover hold earthquake drill',
+          grad: 'linear-gradient(135deg,#6a1b9a,#ba68c8)' },
+        { emoji: '⛰️', name: 'Landslide Awareness',
+          desc: 'Spot early warning signs like slope cracks and tilting trees, and learn safe evacuation paths.',
+          query: 'landslide warning signs safety',
+          grad: 'linear-gradient(135deg,#4e342e,#a1887f)' },
+        { emoji: '🌊', name: 'Tsunami Warning Signs',
+          desc: 'Strong shaking, roaring sea, sudden recession — recognise nature’s tsunami alarm instantly.',
+          query: 'tsunami warning signs evacuation',
+          grad: 'linear-gradient(135deg,#00838f,#4dd0e1)' },
+        { emoji: '🎒', name: 'Build Your Emergency Kit',
+          desc: 'Water, food, torch, radio, medicines — pack a 72-hour grab-bag your family can rely on.',
+          query: 'emergency kit disaster preparedness 72 hours',
+          grad: 'linear-gradient(135deg,#2e7d32,#81c784)' }
+    ];
+
+    var grid = document.getElementById('video-grid');
+    var modal = document.getElementById('video-modal');
+    var frame = document.getElementById('video-frame');
+
+    VIDEOS.forEach(function (v) {
+        var card = document.createElement('div');
+        card.className = 'video-card info-card';
+        card.innerHTML =
+            '<div class="video-thumb" style="background:' + v.grad + ';">' +
+              '<div class="vt-icon">' + v.emoji + '</div>' +
+              '<span class="vt-play"><i class="fas fa-play"></i> WATCH</span>' +
+            '</div>' +
+            '<div class="video-meta"><h3>' + v.name + '</h3><p>' + v.desc + '</p></div>';
+        card.addEventListener('click', function () { openVideo(v); });
+        grid.appendChild(card);
+    });
+
+    function openVideo(v) {
+        frame.src = 'https://www.youtube-nocookie.com/embed?listType=search&list=' +
+                    encodeURIComponent(v.query) + '&rel=0';
+        modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeVideo() {
+        modal.hidden = true;
+        frame.src = '';
+        document.body.style.overflow = '';
+    }
+
+    modal.addEventListener('click', function (e) {
+        if (e.target.hasAttribute('data-close')) closeVideo();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !modal.hidden) closeVideo();
+    });
+
+    /* ---------------- Quiz bank ---------------- */
+    var BANK = [
+        { topic: 'cyclone', q: 'A cyclone warning is issued for your coastal district. What is the correct action?',
+          opts: ['Stay at the beach to watch the waves', 'Go fishing while the sea is rough',
+                 'Evacuate to an inland shelter as soon as authorities instruct', 'Drive along the coast to record videos'],
+          ans: 2,
+          why: 'Authorities evacuate low-lying coastal areas BEFORE landfall. Delaying puts you in storm-surge danger.' },
+
+        { topic: 'cyclone', q: 'Cyclone categories (like “Very Severe Cyclonic Storm”) are mainly based on:',
+          opts: ['Rainfall amount', 'Sustained wind speed', 'Cloud size', 'Tide height'],
+          ans: 1,
+          why: 'IMD classifies cyclones by sustained wind speed — this drives damage expectations and warnings.' },
+
+        { topic: 'cyclone', q: 'If you cannot reach a shelter during a cyclone, the safest spot at home is:',
+          opts: ['Balcony to monitor the storm', 'Small interior room on the lowest floor, away from windows',
+                 'Terrace under open sky', 'Garage with the door open'],
+          ans: 1,
+          why: 'Interior rooms shield you from flying debris and window glass. Never watch the storm outside.' },
+
+        { topic: 'flood', q: 'How little fast-moving floodwater can knock an adult off their feet?',
+          opts: ['About 60 cm', 'About 40 cm', 'About 15 cm', 'Only waist-deep water'],
+          ans: 2,
+          why: 'Just 15 cm of moving water can sweep an adult down — never walk through flowing floodwater.' },
+
+        { topic: 'flood', q: 'Your car is on a road that starts flooding ahead. You should:',
+          opts: ['Speed through quickly', 'Turn around — do not drown', 'Wait inside the car in the water',
+                 'Open the door to check depth while driving'],
+          ans: 1,
+          why: '“Turn Around, Don’t Drown.” Just 30 cm of water can float and stall a car.' },
+
+        { topic: 'flood', q: 'After floodwater recedes, drinking water should be:',
+          opts: ['Used directly from the tap', 'Boiled or purified before drinking', 'Taken from open wells only',
+                 'Collected from streams'],
+          ans: 1,
+          why: 'Floodwater contaminates supplies. Boiling/purification prevents waterborne disease outbreaks.' },
+
+        { topic: 'earthquake', q: 'The ground starts shaking while you are indoors. The correct drill is:',
+          opts: ['Run outside immediately', 'Stand near windows', 'DROP, COVER, HOLD ON under sturdy furniture',
+                 'Take the elevator down'],
+          ans: 2,
+          why: 'Drop, Cover, Hold On protects head and neck from falling debris — running causes more injuries.' },
+
+        { topic: 'earthquake', q: 'Shaking has stopped and you must exit the building. Use:',
+          opts: ['The elevator', 'Stairs, never the elevator', 'The balcony jump route', 'Any window'],
+          ans: 1,
+          why: 'Elevators fail or trap passengers after quakes. Stairs are the only safe exit.' },
+
+        { topic: 'earthquake', q: 'The safest indoor location during an earthquake is:',
+          opts: ['Under a sturdy table away from windows', 'Beside large glass panels', 'Under hanging chandeliers',
+                 'Next to tall bookshelves'],
+          ans: 0,
+          why: 'Sturdy furniture shields you; stay clear of glass and objects that can topple.' },
+
+        { topic: 'landslide', q: 'Which of these is an EARLY WARNING sign of a possible landslide?',
+          opts: ['Fresh cracks or bulging on slopes, tilting trees/fences', 'Clear sunny weather',
+                 'Birds flying normally', 'Low river flow'],
+          ans: 0,
+          why: 'New cracks, bulging ground, jamming doors and tilting poles mean the slope is moving.' },
+
+        { topic: 'landslide', q: 'A landslide begins on a hillside near you. The safest movement is:',
+          opts: ['Run straight downhill ahead of it', 'Move sideways out of the slide path, away from gullies',
+                 'Hide under the slope edge', 'Drive along the valley bottom'],
+          ans: 1,
+          why: 'Debris flows downhill through gullies — move horizontally away from its path to high stable ground.' },
+
+        { topic: 'landslide', q: 'Which vegetation best helps stabilise slopes?',
+          opts: ['Broad shallow-lawns only', 'Deep-rooted grasses/shrubs like vetiver and bamboo',
+                 'Removing all plants', 'Paving the whole slope'],
+          ans: 1,
+          why: 'Deep roots bind soil layers; bare or paved slopes shed water faster and fail sooner.' },
+
+        { topic: 'tsunami', q: 'You feel strong coastal shaking, then the sea suddenly recedes with a roar. You should:',
+          opts: ['Film the exposed seabed', 'Move inland/high ground IMMEDIATELY', 'Wait for sirens first',
+                 'Go collect stranded fish'],
+          ans: 1,
+          why: 'Nature’s tsunami alarm gives minutes only — run to high ground now, warn others on the way.' },
+
+        { topic: 'tsunami', q: 'After the FIRST tsunami wave passes, it is safe to return because:',
+          opts: ['Yes, the danger is over', 'No — waves come as a series over hours; later ones can be larger',
+                 'Only if the sun comes out', 'Only after one hour'],
+          ans: 1,
+          why: 'A tsunami is many waves. Stay on high ground until officials issue the ALL-CLEAR.' },
+
+        { topic: 'tsunami', q: 'The official tsunami ALL-CLEAR is announced by:',
+          opts: ['Social media rumours', 'INCOIS / SDMA / local authorities', 'Neighbours guessing', 'Weather apps only'],
+          ans: 1,
+          why: 'Only official agencies confirm all-clear. Ignore unverified messages.' },
+
+        { topic: 'general', q: 'How much drinking water should your emergency kit hold per person?',
+          opts: ['1 litre total', 'About 3 litres per day for 3 days', '500 ml per week', 'No water needed'],
+          ans: 1,
+          why: 'Standard guidance: ~3 L/person/day × 3 days minimum in your grab-bag.' },
+
+        { topic: 'general', q: 'The national disaster helpline (NDMA) number is:',
+          opts: ['1078', '1999', '181', '1091'],
+          ans: 0,
+          why: 'NDMA helpline 1078 coordinates national disaster response information.' },
+
+        { topic: 'general', q: 'Fire emergency number in India is:',
+          opts: ['100', '101', '102', '108'],
+          ans: 1,
+          why: '101 = Fire & Rescue. (Police 100/112, Ambulance 108.)' }
+    ];
+
+    var TOPICS = [
+        { key: 'all',       emoji: '🌍', name: 'Mixed Challenge',   desc: 'Random questions from every hazard' },
+        { key: 'cyclone',   emoji: '🌀', name: 'Cyclones',          desc: 'Warnings, surge & shelters' },
+        { key: 'flood',     emoji: '🌧️', name: 'Floods',            desc: 'Depth dangers & recovery' },
+        { key: 'earthquake',emoji: '🏚️', name: 'Earthquakes',       desc: 'Drop, Cover, Hold On' },
+        { key: 'landslide', emoji: '⛰️', name: 'Landslides',        desc: 'Signs & escape routes' },
+        { key: 'tsunami',   emoji: '🌊', name: 'Tsunamis',          desc: 'Natural alarms & all-clear' },
+        { key: 'general',   emoji: '🎒', name: 'Preparedness',      desc: 'Kits & helplines' }
+    ];
+
+    var startView = document.getElementById('quiz-start');
+    var playView  = document.getElementById('quiz-play');
+    var resultView= document.getElementById('quiz-result');
+    var topicsEl  = document.getElementById('quiz-topics');
+    var bestLine  = document.getElementById('best-scores-line');
+
+    function storeKey(t) { return 'sk_quiz_best_' + t; }
+    function getBest(t) {
+        try { return parseInt(localStorage.getItem(storeKey(t)) || '0', 10); }
+        catch (e) { return 0; }
+    }
+    function setBest(t, score) {
+        try { localStorage.setItem(storeKey(t), String(score)); } catch (e) {}
+    }
+
+    function renderTopics() {
+        topicsEl.innerHTML = '';
+        TOPICS.forEach(function (t) {
+            var n = t.key === 'all'
+                ? BANK.length
+                : BANK.filter(function (q) { return q.topic === t.key; }).length;
+            var b = document.createElement('button');
+            b.className = 'quiz-topic-btn';
+            b.innerHTML =
+                '<span class="qt-emoji">' + t.emoji + '</span>' +
+                '<span class="qt-name">' + t.name + '</span>' +
+                '<span class="qt-count">' + n + ' questions • ' + t.desc + '</span>' +
+                '<span class="qt-best">🏆 Best: ' + getBest(t.key) + '/' + n + '</span>';
+            b.addEventListener('click', function () { startQuiz(t.key, n); });
+            topicsEl.appendChild(b);
+        });
+        var parts = TOPICS.filter(function (t) { return t.key !== 'all'; })
+            .map(function (t) { return t.emoji + ' ' + getBest(t.key); });
+        bestLine.textContent = parts.join('   •   ');
+    }
+
+    /* ---- play state ---- */
+    var queue = [], idx = 0, score = 0, currentTopic = 'all', locked = false;
+
+    function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+        }
+        return arr;
+    }
+
+    function startQuiz(topic, count) {
+        currentTopic = topic;
+        queue = shuffle(BANK.filter(function (q) {
+            return topic === 'all' || q.topic === topic;
+        })).slice(0, count);
+        idx = 0; score = 0;
+        startView.hidden = true;
+        resultView.hidden = true;
+        playView.hidden = false;
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        locked = false;
+        var q = queue[idx];
+        document.getElementById('quiz-counter').textContent = 'Q ' + (idx + 1) + ' / ' + queue.length;
+        document.getElementById('quiz-progress-bar').style.width =
+            Math.round((idx / queue.length) * 100) + '%';
+        document.getElementById('quiz-score-live').textContent = 'Score ' + score;
+        document.getElementById('quiz-question').textContent = q.q;
+
+        var fb = document.getElementById('quiz-feedback');
+        fb.hidden = true; fb.className = 'quiz-feedback'; fb.textContent = '';
+        document.getElementById('quiz-next-btn').hidden = true;
+
+        var optsEl = document.getElementById('quiz-options');
+        optsEl.innerHTML = '';
+        var keys = ['A', 'B', 'C', 'D'];
+        q.opts.forEach(function (text, i) {
+            var b = document.createElement('button');
+            b.className = 'quiz-opt';
+            b.innerHTML = '<span class="opt-key">' + keys[i] + '</span><span>' + text + '</span>';
+            b.addEventListener('click', function () { answer(i, b); });
+            optsEl.appendChild(b);
+        });
+    }
+
+    function answer(i, btn) {
+        if (locked) return;
+        locked = true;
+        var q = queue[idx];
+        var buttons = document.querySelectorAll('#quiz-options .quiz-opt');
+        buttons.forEach(function (b) { b.disabled = true; });
+
+        if (i === q.ans) {
+            score++;
+            btn.classList.add('correct');
+            showFeedback(true, q.why);
+        } else {
+            btn.classList.add('wrong');
+            buttons[q.ans].classList.add('correct');
+            showFeedback(false, q.why);
+        }
+        document.getElementById('quiz-score-live').textContent = 'Score ' + score;
+
+        var nextBtn = document.getElementById('quiz-next-btn');
+        nextBtn.hidden = false;
+        nextBtn.innerHTML = (idx + 1 >= queue.length)
+            ? 'See Results <i class="fas fa-flag-checkered"></i>'
+            : 'Next Question <i class="fas fa-arrow-right"></i>';
+    }
+
+    function showFeedback(good, why) {
+        var fb = document.getElementById('quiz-feedback');
+        fb.className = 'quiz-feedback ' + (good ? 'good' : 'bad');
+        fb.innerHTML = (good ? '✅ <strong>Correct!</strong> ' : '❌ <strong>Not quite.</strong> ') + why;
+        fb.hidden = false;
+    }
+
+    document.getElementById('quiz-next-btn').addEventListener('click', function () {
+        idx++;
+        if (idx >= queue.length) finishQuiz();
+        else renderQuestion();
+    });
+
+    function finishQuiz() {
+        playView.hidden = true;
+        resultView.hidden = false;
+        var total = queue.length;
+        var pct = Math.round((score / total) * 100);
+
+        var best = getBest(currentTopic);
+        var isNewBest = score > best;
+        if (isNewBest) setBest(currentTopic, score);
+
+        var emoji = pct >= 90 ? '🏆' : pct >= 70 ? '🥇' : pct >= 50 ? '👍' : '📚';
+        var headline = pct >= 90 ? 'Certified Kavach Guardian!' :
+                       pct >= 70 ? 'Great job — nearly there!' :
+                       pct >= 50 ? 'Good effort — keep learning!' : 'Time to revisit the videos!';
+        var msg = pct >= 90 ? 'Outstanding! You know exactly what to do when disaster strikes.'
+                : pct >= 70 ? 'Strong awareness. Review the missed topics in the video library above.'
+                : pct >= 50 ? 'Decent base. Watch the topic videos above and try again.'
+                : 'Start with the video library above, then retake this quiz.';
+
+        document.getElementById('result-emoji').textContent = emoji;
+        document.getElementById('result-headline').textContent = headline;
+        document.getElementById('result-score').textContent = 'You scored ' + score + ' / ' + total + ' (' + pct + '%)';
+        document.getElementById('result-message').textContent = msg;
+        document.getElementById('result-best').textContent =
+            (isNewBest ? '🎉 New personal best! ' : '') +
+            'Best for this topic: ' + Math.max(best, score) + '/' + total;
+    }
+
+    document.getElementById('quiz-retry').addEventListener('click', function () {
+        startQuiz(currentTopic, queue.length);
+    });
+    document.getElementById('quiz-home').addEventListener('click', function () {
+        resultView.hidden = true;
+        startView.hidden = false;
+        renderTopics();
+    });
+
+    renderTopics();
+})();
+</script>
+{% endblock %}

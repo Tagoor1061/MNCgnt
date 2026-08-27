@@ -1,0 +1,95 @@
+{
+    "status": "default",
+    "basin_qpf": {
+        "basin_name": "Krishna Basin (Lower)",
+        "issued_at": null,
+        "polygon": [
+            [
+                16.05,
+                80.1
+            ],
+            [
+                16.35,
+                80.3
+            ],
+            [
+                16.2,
+                80.65
+            ],
+            [
+                15.9,
+                80.4
+            ]
+        ],
+        "sub_basins": [
+            {
+                "name": "Hills Sub-basin (NE Guntur)",
+                "qpf_mm": 88.6,
+                "risk": "HIGH"
+            },
+            {
+                "name": "Krishna Delta Margin",
+                "qpf_mm": 54.2,
+                "risk": "MODERATE"
+            },
+            {
+                "name": "Nagarjuna Sagar Foothills",
+                "qpf_mm": 71.8,
+                "risk": "HIGH"
+            }
+        ],
+        "status": "default",
+        "fetched_at": "2026-08-23 22:36:30"
+    },
+    "district_rainfall": {
+        "districts": [
+            {
+                "district": "Guntur",
+                "rainfall_mm": 96.4,
+                "normal_mm": 48.2,
+                "departure_percent": 100.0,
+                "category": "Very Heavy",
+                "lat": 16.3067,
+                "lon": 80.4365
+            },
+            {
+                "district": "Palnadu",
+                "rainfall_mm": 112.8,
+                "normal_mm": 52.6,
+                "departure_percent": 114.4,
+                "category": "Very Heavy",
+                "lat": 16.1067,
+                "lon": 79.9365
+            },
+            {
+                "district": "Bapatla",
+                "rainfall_mm": 48.2,
+                "normal_mm": 44.0,
+                "departure_percent": 9.5,
+                "category": "Moderate",
+                "lat": 15.9049,
+                "lon": 80.4675
+            },
+            {
+                "district": "NTR (Vijayawada)",
+                "rainfall_mm": 84.6,
+                "normal_mm": 50.1,
+                "departure_percent": 68.9,
+                "category": "Heavy",
+                "lat": 16.5062,
+                "lon": 80.648
+            }
+        ],
+        "status": "default",
+        "fetched_at": "2026-08-23 22:36:28"
+    },
+    "state_rainfall": {
+        "state": "Andhra Pradesh",
+        "actual_mm": 68.4,
+        "normal_mm": 47.8,
+        "departure_percent": 43.1,
+        "status": "default",
+        "fetched_at": "2026-08-23 22:36:29"
+    },
+    "fetched_at": "2026-08-23 22:36:30"
+}

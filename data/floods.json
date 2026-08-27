@@ -1,0 +1,61 @@
+{
+    "disaster": "floods",
+    "water_level_m": 4.8,
+    "danger_mark_m": 5.5,
+    "river_name": "Krishna River",
+    "active_flood_warnings": 2,
+    "inundated_wards": [
+        "Kaza",
+        "Tadepalli",
+        "Mangalagiri",
+        "Tenali North"
+    ],
+    "flood_zones": [
+        {
+            "name": "Krishna Riverbed Lowlands",
+            "risk": "High",
+            "color": "#d32f2f",
+            "polygon": [
+                [
+                    16.48,
+                    80.58
+                ],
+                [
+                    16.52,
+                    80.64
+                ],
+                [
+                    16.47,
+                    80.66
+                ],
+                [
+                    16.44,
+                    80.6
+                ]
+            ]
+        },
+        {
+            "name": "Guntur Canal Low Risk Area",
+            "risk": "Moderate",
+            "color": "#ff9800",
+            "polygon": [
+                [
+                    16.28,
+                    80.42
+                ],
+                [
+                    16.32,
+                    80.48
+                ],
+                [
+                    16.3,
+                    80.52
+                ],
+                [
+                    16.25,
+                    80.45
+                ]
+            ]
+        }
+    ]
+}

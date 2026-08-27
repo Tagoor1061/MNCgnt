@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}News & Updates - Guntur Municipal Corporation{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION</div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+                <li><a href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a></li>
+            {% else %}
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('viewmap.view_map') }}">View Map</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<section style="max-width: 1100px; margin: 2rem auto; padding: 2rem 1.5rem;">
+    <!-- Banner -->
+    <div style="background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%); color: white; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: var(--shadow-medium); margin-bottom: 2rem;">
+        <h1 style="font-size: 2.3rem; margin: 0 0 0.5rem 0; color: white;">📰 Live News & Municipal Updates</h1>
+        <p style="margin: 0 0 1.5rem 0; font-size: 1.1rem; opacity: 0.9;">Real-time weather, municipal announcements, and flood management news powered by NewsAPI</p>
+
+        <!-- Search Bar -->
+        <form method="GET" action="{{ url_for('news.news') }}" style="max-width: 650px; margin: 0 auto; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <input type="text" id="news-search-input" name="q" value="{{ search_query|default('') }}" placeholder="🔍 Search news (e.g. flood, rain, Guntur, road, weather)..." style="flex: 1; min-width: 220px; padding: 0.85rem 1.2rem; border-radius: 30px; border: none; font-size: 1rem; outline: none; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <button type="submit" class="btn-primary" style="padding: 0.85rem 1.6rem; border-radius: 30px; background: #FF851B; color: white; border: none; font-weight: 600; cursor: pointer; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                Search
+            </button>
+            {% if search_query %}
+                <a href="{{ url_for('news.news') }}" style="padding: 0.85rem 1.2rem; border-radius: 30px; background: rgba(255,255,255,0.25); color: white; text-decoration: none; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center;">
+                    ✖ Clear
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if error %}
+        <div class="alert alert-danger" style="margin-bottom: 2rem;">
+            <i class="fas fa-exclamation-triangle"></i> Live news warning: {{ error }}
+        </div>
+    {% endif %}
+
+    {% if search_query %}
+        <p style="font-size: 1.1rem; color: #555; margin-bottom: 1.5rem;">
+            Showing results for: <strong>"{{ search_query }}"</strong>
+        </p>
+    {% endif %}
+
+    {% if not articles %}
+        <div style="background: white; border-radius: 12px; padding: 3rem; text-align: center; box-shadow: var(--shadow-soft);">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+            <h3 style="color: #666; margin-bottom: 0.5rem;">No news articles found</h3>
+            <p style="color: #888;">Try searching for a different keyword or <a href="{{ url_for('news.news') }}" style="color: var(--primary-color);">view all news</a>.</p>
+        </div>
+    {% else %}
+        <div id="articles-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.8rem;">
+            {% for article in articles %}
+                <article class="news-article" data-title="{{ article.title|lower }}" data-content="{{ article.content|lower }}" style="background: rgba(255, 255, 255, 0.98); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-soft); border: 1px solid rgba(0,0,0,0.08); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease; position: relative; overflow: hidden; {% if article.is_flood_related %}border-left: 6px solid #d9534f; background: #fffdfd;{% else %}border-left: 6px solid #2E8B57;{% endif %}">
+
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <span style="background: #e9ecef; color: #333; font-weight: 600; font-size: 0.82rem; padding: 0.3rem 0.7rem; border-radius: 20px;">
+                                🏛️ {{ article.source }}
+                            </span>
+
+                            {% if article.is_flood_related %}
+                                <span style="background: #f8d7da; color: #721c24; font-weight: bold; font-size: 0.82rem; padding: 0.3rem 0.7rem; border-radius: 20px; box-shadow: 0 2px 4px rgba(217,83,79,0.2);">
+                                    🌊 Flood & Weather Alert
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <h3 style="color: #1a1a1a; margin-top: 0; margin-bottom: 0.8rem; font-size: 1.25rem; line-height: 1.4;">
+                            {{ article.title }}
+                        </h3>
+
+                        {% if article.published_date %}
+                            <p style="color: #777; font-size: 0.85rem; margin-bottom: 1rem;">
+                                <i class="far fa-clock"></i> {{ article.published_date }}
+                            </p>
+                        {% endif %}
+
+                        {% if article.image_url %}
+                            <div style="width: 100%; height: 180px; overflow: hidden; border-radius: 10px; margin-bottom: 1rem; background: #f0f0f0;">
+                                <img src="{{ article.image_url }}" alt="{{ article.title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none';">
+                            </div>
+                        {% endif %}
+
+                        <p style="color: #555; line-height: 1.6; font-size: 0.98rem; margin-bottom: 1.2rem;">
+                            {{ article.content }}
+                        </p>
+                    </div>
+
+                    {% if article.external_url %}
+                        <div style="padding-top: 0.8rem; border-top: 1px solid #eee;">
+                            <a href="{{ article.external_url }}" target="_blank" rel="noopener" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 0.5rem 1.2rem; font-size: 0.9rem; border-radius: 6px;">
+                                Read Full Article 🔗
+                            </a>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('news-search-input');
+    const articles = document.querySelectorAll('#articles-container .news-article');
+
+    if (searchInput && articles.length > 0) {
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase().trim();
+            articles.forEach(article => {
+                const title = article.getAttribute('data-title') || '';
+                const content = article.getAttribute('data-content') || '';
+                if (title.includes(query) || content.includes(query)) {
+                    article.style.display = 'flex';
+                } else {
+                    article.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
+
+<footer>
+    <div class="contacts">
+        <p>Contacts: 7989332358 | info@municipalcorporation.gov</p>
+        <p>Address: GMRIT deemed to be university, Rajam, 532127, AP.</p>
+    </div>
+</footer>
+{% endblock %}

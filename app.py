@@ -36,12 +36,14 @@ if not hasattr(ast, 'NameConstant'):
 
 from app import create_app, db
 from app.models import User  # import models so tables are registered
+from app.routes.init_db import seed_admin_users
 
 app = create_app()
 
-# Create tables if they don't exist
+# Create tables and seed default admin users if they don't exist
 with app.app_context():
     db.create_all()
+    seed_admin_users()
 
 if __name__ == "__main__":
     app.run(debug=True)

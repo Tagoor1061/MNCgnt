@@ -1,0 +1,41 @@
+{
+    "basin_name": "Krishna Basin (Lower)",
+    "issued_at": null,
+    "polygon": [
+        [
+            16.05,
+            80.1
+        ],
+        [
+            16.35,
+            80.3
+        ],
+        [
+            16.2,
+            80.65
+        ],
+        [
+            15.9,
+            80.4
+        ]
+    ],
+    "sub_basins": [
+        {
+            "name": "Hills Sub-basin (NE Guntur)",
+            "qpf_mm": 88.6,
+            "risk": "HIGH"
+        },
+        {
+            "name": "Krishna Delta Margin",
+            "qpf_mm": 54.2,
+            "risk": "MODERATE"
+        },
+        {
+            "name": "Nagarjuna Sagar Foothills",
+            "qpf_mm": 71.8,
+            "risk": "HIGH"
+        }
+    ],
+    "status": "default",
+    "fetched_at": "2026-08-23 22:36:30"
+}

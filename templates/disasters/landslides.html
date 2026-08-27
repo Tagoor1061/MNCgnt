@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Landslide Early Warning & Slope Stability Management{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        LANDSLIDE EARLY WARNING & SLOPE STABILITY EMERGENCY PORTAL
+        <span class="sub-text">DEM Slope Monitoring, Rainfall Threshold Tracking, Seismic Triggers & High-Risk Hazard Map</span>
+    </div>
+</div>
+
+<div class="disaster-detail-container">
+    <div class="detail-hero hero-landslides hero-3d">
+        <div class="hero-mountains" aria-hidden="true">
+            <svg class="mtn mtn-back" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="#ffffff" d="M0,224L80,213.3C160,203,320,181,480,192C640,203,800,245,960,234.7C1120,224,1280,160,1360,128L1440,96L1440,320L0,320Z"/></svg>
+            <svg class="mtn mtn-mid" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="#ffffff" d="M0,288L120,261.3C240,235,480,181,720,176C960,171,1200,213,1320,234.7L1440,256L1440,320L0,320Z"/></svg>
+            <svg class="mtn mtn-front" viewBox="0 0 1440 320" preserveAspectRatio="none"><path fill="#3e2723" d="M0,320L180,266.7C360,213,540,107,720,101.3C900,96,1080,192,1260,240L1440,288L1440,320L0,320Z"/></svg>
+        </div>
+        <div class="hero-badge-item"><i class="fas fa-mountain"></i> Landslide Early Warning Command Center</div>
+        <h1>⛰️ Landslide Early Warning Unit</h1>
+        <p>Real-time DEM slope stability tracking, IMD rainfall threshold monitoring, USGS seismic trigger detection, NOAA/NCEI soil saturation analysis, and AI-powered landslide probability prediction for Guntur Corporation.</p>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="status-card-box">
+        <div class="status-info">
+            <h3><i class="fas fa-mountain"></i> Live Slope & Soil Status</h3>
+            <p>Kotappakonda, Palnadu escarpment & urban cut-slope real-time hazard monitoring.</p>
+            <div class="status-pills">
+                <span class="pill pill-green"><i class="fas fa-check-circle"></i> Slope Network: Active</span>
+                <span class="pill pill-blue"><i class="fas fa-cloud-rain"></i> City Rainfall: {{ weather.condition if weather and weather.condition else 'Light Rain / Advisory' }}</span>
+            </div>
+        </div>
+        <div class="status-actions">
+            <a href="{{ url_for('viewmap.view_map') }}" class="btn-detail-action btn-blue"><i class="fas fa-map-marked-alt"></i> Open Hazard Risk Map</a>
+            <button class="btn-detail-action btn-green" onclick="subscribeToNotifications()"><i class="fas fa-bell"></i> Enable Landslide Push Alerts</button>
+        </div>
+    </div>
+
+    <!-- Landslide Early Warning Unit — IMD + USGS + NOAA/NCEI + DEM AI Dashboard -->
+    <div id="landslide-preparedness-widget"></div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/leaflet.css') }}" />
+    <script src="{{ url_for('static', filename='lib/leaflet.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/chart.umd.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/LandslidePreparednessUnit.js') }}?v=4"></script>
+
+    <!-- Key Information Grid -->
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="card-head text-brown"><i class="fas fa-hard-hat"></i> Municipal Slope Protocols</div>
+            <ul>
+                <li><strong>24/7 Slope Movement Watch:</strong> Crack gauges and tilt sensors monitored across vulnerable hill zones.</li>
+                <li><strong>Rainfall Threshold Alerts:</strong> Automatic warnings when 64.5 mm/day slide-watch levels are breached.</li>
+                <li><strong>Drainage Clearing Teams:</strong> Pre-monsoon desilting of hillside stormwater channels and culverts.</li>
+                <li><strong>Cut-Slope Inspections:</strong> Periodic geotechnical review of road-cut and construction slopes.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-green"><i class="fas fa-home"></i> Relief & Shelter Centers</div>
+            <ul>
+                <li>Community halls and municipal schools on high ground prepared as temporary relief shelters.</li>
+                <li>Provision of clean drinking water, food packets, and medical health kits.</li>
+                <li>Emergency rescue units stationed near Kotappakonda and Palnadu foothill villages.</li>
+                <li>Post-slide health camps for injury triage and water-borne disease prevention.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-red"><i class="fas fa-phone-alt"></i> Landslide Emergency Helplines</div>
+            <div class="contact-list">
+                <div class="contact-line"><span>NDMA Helpline:</span> <strong>1078</strong></div>
+                <div class="contact-line"><span>State Emergency Ops (SDMA):</span> <strong>1070</strong></div>
+                <div class="contact-line"><span>Police:</span> <strong>100</strong></div>
+                <div class="contact-line"><span>Fire & Rescue:</span> <strong>101</strong></div>
+                <div class="contact-line"><span>Ambulance:</span> <strong>108</strong></div>
+                <div class="contact-line"><span>GMC Disaster Helpline:</span> <strong>1800-103-4242</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Steps -->
+    <div class="safety-steps-box">
+        <h2><i class="fas fa-life-ring"></i> Landslide Safety Guidelines for Citizens</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>1. Before Intense Rain</h3>
+                <p>Clear drains around hillside homes, check retaining walls for cracks, and identify your nearest uphill assembly point. Keep an emergency grab-bag ready.</p>
+            </div>
+            <div class="step-item">
+                <h3>2. During a Slide Warning</h3>
+                <p>Evacuate horizontally away from the slope path — never run downhill directly ahead of moving debris. Listen for rumbling sounds and watch for tilting trees or poles.</p>
+            </div>
+            <div class="step-item">
+                <h3>3. After a Landslide</h3>
+                <p>Stay away from the slide area — secondary slides are common. Check for injured or trapped neighbours, report damage via our portal, and avoid crossing debris-choked roads.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons-row">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report Slope Cracks to Government</a>
+    </div>
+</div>
+
+<style>
+.disaster-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.detail-hero {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.hero-landslides {
+    background: linear-gradient(135deg, #4e342e 0%, #795548 100%);
+}
+
+.hero-badge-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.detail-hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.8rem 0;
+}
+
+.detail-hero p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.status-card-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1.8rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.status-info h3 {
+    margin: 0 0 0.4rem 0;
+    color: #2c3e50;
+}
+
+.status-info p {
+    margin: 0 0 0.8rem 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-pills {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pill-green { background: #e8f5e9; color: #2e7d32; }
+.pill-blue { background: #e3f2fd; color: #1565c0; }
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-detail-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-blue { background: #1565c0; }
+.btn-green { background: #2e7d32; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card-head {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.text-blue { color: #1565c0; }
+.text-green { color: #2e7d32; }
+.text-red { color: #d32f2f; }
+.text-brown { color: #5d4037; }
+
+.info-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 0.93rem;
+}
+
+.contact-line {
+    background: #ffebee;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    color: #b71c1c;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.safety-steps-box {
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.safety-steps-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.step-item h3 {
+    margin: 0 0 0.6rem 0;
+    color: #5d4037;
+    font-size: 1.15rem;
+}
+
+.step-item p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.nav-buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-nav-back {
+    background: white;
+    color: #5d4037;
+    border: 2px solid #5d4037;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-nav-report {
+    background: #5d4037;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+/* ---------------- 3D Effects ---------------- */
+.hero-3d {
+    perspective: 1000px;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-mountains {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 62%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.mtn {
+    position: absolute;
+    bottom: -2px;
+    left: -10%;
+    width: 120%;
+    height: 100%;
+    will-change: transform;
+    transition: transform 0.25s ease-out;
+}
+
+.mtn-back { opacity: 0.18; }
+.mtn-mid { opacity: 0.32; }
+.mtn-front { opacity: 0.92; filter: drop-shadow(0 -6px 14px rgba(0,0,0,0.35)); }
+
+.hero-3d > *:not(.hero-mountains) {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-3d .hero-badge-item {
+    display: inline-block;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.30);
+    animation: floatBadge 4.5s ease-in-out infinite;
+}
+
+@keyframes floatBadge {
+    0%, 100% { transform: translateY(0) rotateX(0deg); }
+    50% { transform: translateY(-7px) rotateX(6deg); }
+}
+
+/* Depth entrance for cards */
+@keyframes rise3d {
+    from { opacity: 0; transform: perspective(800px) rotateX(14deg) translateY(34px); }
+    to { opacity: 1; transform: perspective(800px) rotateX(0deg) translateY(0); }
+}
+
+.rise-in {
+    animation: rise3d 0.75s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* Cursor-following 3D tilt (applied by script below) */
+.tilt3d {
+    transform-style: preserve-3d;
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+    will-change: transform;
+}
+
+.tilt3d:hover {
+    box-shadow: 0 16px 34px rgba(0,0,0,0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .rise-in, .hero-3d .hero-badge-item { animation: none; }
+    .tilt3d, .mtn, .hero-3d .hero-badge-item { transition: none; }
+}
+</style>
+
+<script>
+(function () {
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+
+    /* ---- Hero: layered mountain parallax + badge 3D follow ---- */
+    var hero = document.querySelector('.hero-3d');
+    if (hero) {
+        var layers = hero.querySelectorAll('.mtn');
+        var badge = hero.querySelector('.hero-badge-item');
+        hero.addEventListener('pointermove', function (e) {
+            var r = hero.getBoundingClientRect();
+            var dx = (e.clientX - r.left) / r.width - 0.5;
+            var dy = (e.clientY - r.top) / r.height - 0.5;
+            layers.forEach(function (el, i) {
+                var depth = (i + 1) * 12;
+                el.style.transform = 'translate3d(' + (dx * depth).toFixed(1) + 'px,' +
+                    (dy * depth / 2).toFixed(1) + 'px,0)';
+            });
+            if (badge) {
+                badge.style.animation = 'none';
+                badge.style.transform = 'rotateX(' + (-dy * 9).toFixed(2) + 'deg) rotateY(' +
+                    (dx * 11).toFixed(2) + 'deg) translateZ(14px)';
+            }
+        });
+        hero.addEventListener('pointerleave', function () {
+            layers.forEach(function (el) { el.style.transform = ''; });
+            if (badge) { badge.style.transform = ''; badge.style.animation = ''; }
+        });
+    }
+
+    /* Card tilt + staggered entrance are handled globally by
+       static/js/effects3d.js (loaded from base.html). This page only adds
+       its unique layered-mountain parallax above. */
+})();
+</script>
+{% endblock %}

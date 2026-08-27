@@ -1,0 +1,296 @@
+/* ============================================================
+   Suraksha Kavach — Global Design System & 3D Effects
+   Loaded from base.html on EVERY page (after styles.css).
+   body-prefixed rules intentionally outrank page-level styles.
+   Pure transform/opacity animations; honours reduced motion.
+   ============================================================ */
+
+/* ---------------- Design tokens ---------------- */
+body {
+    --sk-primary: #1b5e20;
+    --sk-primary-2: #2e7d32;
+    --sk-accent: #ff8f1f;
+    --sk-ink: #22303c;
+    --sk-muted: #5d6d7a;
+    --sk-surface: #ffffff;
+    --sk-radius: 14px;
+    --sk-shadow-sm: 0 2px 6px rgba(16, 42, 67, 0.08);
+    --sk-shadow-md: 0 10px 28px rgba(16, 42, 67, 0.12);
+    --sk-shadow-lg: 0 18px 44px rgba(16, 42, 67, 0.18);
+}
+
+/* ---------------- Typography polish ---------------- */
+body h1, body h2 {
+    letter-spacing: -0.015em;
+}
+
+body .main-navbar .main-title {
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #ffffff 0%, #ffe9c9 45%, #ffb35c 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}
+
+body .main-navbar .main-subtitle {
+    letter-spacing: 0.14em;
+    font-size: 0.78rem !important;
+    opacity: 0.85;
+}
+
+/* ---------------- Main navbar: deep shield gradient ---------------- */
+body .main-navbar {
+    background:
+        radial-gradient(120% 180% at 85% -20%, rgba(255, 143, 31, 0.25) 0%, transparent 55%),
+        linear-gradient(135deg, #0d2b1e 0%, #14532d 55%, #1b6b3a 100%);
+    box-shadow: 0 10px 30px rgba(9, 40, 24, 0.35);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ---------------- Secondary navbar: sticky glass ---------------- */
+body .secondary-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    background: linear-gradient(135deg, rgba(20, 60, 40, 0.92) 0%, rgba(27, 94, 52, 0.92) 100%);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 6px 22px rgba(9, 40, 24, 0.30);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+body .secondary-navbar li a {
+    color: #eaf7ef !important;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+body .secondary-navbar li a:hover {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+}
+
+/* Dropdown menu: floating card.
+   CRITICAL: margin-top must stay 0 — any vertical gap between the trigger
+   and the menu breaks :hover while the cursor crosses it, snapping the
+   menu shut before an item can be clicked. */
+body .secondary-navbar .dropdown-menu {
+    background: #ffffff !important;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    border-radius: 12px;
+    padding: 0.5rem !important;
+    margin-top: 0 !important;
+    min-width: 250px;
+    box-shadow: var(--sk-shadow-lg);
+    overflow: hidden;
+}
+
+/* Invisible hover bridge below each dropdown trigger: keeps .nav-dropdown
+   in :hover state while the cursor travels down into the menu, so the
+   menu can never close mid-crossing (fixes intermittent selection loss). */
+body .secondary-navbar .nav-dropdown::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 16px;
+}
+
+body .secondary-navbar .dropdown-menu li a {
+    color: var(--sk-ink) !important;
+    border-radius: 8px;
+    padding: 0.55rem 0.8rem !important;
+    transition: background 0.2s ease, transform 0.2s ease, padding-left 0.2s ease;
+}
+
+body .secondary-navbar .dropdown-menu li a:hover {
+    background: linear-gradient(90deg, #e8f5e9, #f1f8e9) !important;
+    color: var(--sk-primary) !important;
+    transform: translateX(3px);
+}
+
+/* ---------------- Cards: premium surface treatment ---------------- */
+body .info-card,
+body .disaster-card,
+body .step-item,
+body .guideline-card,
+body .category-card {
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdfc 100%);
+    border: 1px solid rgba(16, 42, 67, 0.07);
+    border-radius: var(--sk-radius);
+    box-shadow: var(--sk-shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradient accent bar on card tops */
+body .info-card::before,
+body .disaster-card::before,
+body .step-item::before,
+body .guideline-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sk-primary-2), var(--sk-accent));
+    opacity: 0.85;
+}
+
+body .info-card:hover,
+body .disaster-card:hover,
+body .guideline-card:hover {
+    box-shadow: var(--sk-shadow-md);
+}
+
+/* Section headings: accent underline */
+body .detail-grid .card-head,
+body .safety-steps-box h2,
+body .safety-guidelines-box h2,
+body .categories-section h2,
+body .form-card-box h2 {
+    position: relative;
+    padding-bottom: 0.45rem;
+}
+
+body .detail-grid .card-head::after,
+body .safety-steps-box h2::after,
+body .safety-guidelines-box h2::after,
+body .categories-section h2::after,
+body .form-card-box h2::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 56px;
+    height: 3px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--sk-primary-2), var(--sk-accent));
+}
+
+/* ---------------- Buttons: unified premium system ---------------- */
+body .btn-action,
+body .btn-detail-action,
+body .btn-card-link,
+body .btn-primary,
+body .btn-secondary,
+body .btn-gps,
+body .btn-submit-main,
+body .btn-submit-report,
+body .btn-nav-back,
+body .btn-nav-report,
+body .btn-back,
+body .btn-login,
+body .btn-register,
+body .disaster-btn,
+body .hero-btn {
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 4px 14px rgba(16, 42, 67, 0.15);
+}
+
+body .btn-action:focus-visible,
+body .btn-detail-action:focus-visible,
+body .btn-card-link:focus-visible,
+body .btn-primary:focus-visible,
+body .btn-secondary:focus-visible,
+body .hero-btn:focus-visible {
+    outline: 3px solid rgba(46, 125, 50, 0.35);
+    outline-offset: 2px;
+}
+
+/* ---------------- Marquee refinement ---------------- */
+body .marquee-container .marquee {
+    letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   3D EFFECTS (retained)
+   ============================================================ */
+
+/* ---- Entrance: rise with 3D rotation ---- */
+@keyframes fx-rise3d {
+    from { opacity: 0; transform: perspective(800px) rotateX(14deg) translateY(34px); }
+    to   { opacity: 1; transform: perspective(800px) rotateX(0deg)  translateY(0); }
+}
+
+.fx-rise-in {
+    animation: fx-rise3d 0.75s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* ---- Cursor-following tilt ---- */
+.fx-tilt {
+    transform-style: preserve-3d;
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out;
+    will-change: transform;
+}
+
+.fx-tilt:hover {
+    box-shadow: var(--sk-shadow-md);
+}
+
+/* ---- Navbar dropdown 3D flip-in ---- */
+.nav-dropdown .dropdown-menu {
+    transform-origin: top center;
+}
+
+.nav-dropdown:hover .dropdown-menu,
+.nav-dropdown:focus-within .dropdown-menu {
+    animation: fx-drop-in 0.28s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+@keyframes fx-drop-in {
+    from { opacity: 0; transform: perspective(600px) rotateX(-8deg) translateY(-4px); }
+    to   { opacity: 1; transform: perspective(600px) rotateX(0deg)  translateY(0); }
+}
+
+/* ---- Buttons: 3D lift & press ---- */
+.btn-action, .btn-push, .btn-detail-action, .btn-card-link, .btn-primary,
+.btn-secondary, .btn-gps, .btn-submit-main, .btn-submit-report,
+.btn-nav-back, .btn-nav-report, .btn-back, .btn-login, .btn-register,
+.disaster-btn, .hero-btn {
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out,
+                background 0.3s ease, color 0.3s ease;
+}
+
+.btn-action:hover, .btn-push:hover, .btn-detail-action:hover, .btn-card-link:hover,
+.btn-primary:hover, .btn-secondary:hover, .btn-gps:hover, .btn-submit-main:hover,
+.btn-submit-report:hover, .btn-nav-back:hover, .btn-nav-report:hover,
+.btn-back:hover, .btn-login:hover, .btn-register:hover,
+.disaster-btn:hover, .hero-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+.btn-action:active, .btn-push:active, .btn-detail-action:active, .btn-card-link:active,
+.btn-primary:active, .btn-secondary:active, .btn-gps:active, .btn-submit-main:active,
+.btn-submit-report:active, .btn-nav-back:active, .btn-nav-report:active,
+.btn-back:active, .btn-login:active, .btn-register:active,
+.disaster-btn:active, .hero-btn:active {
+    transform: translateY(0) scale(0.96);
+}
+
+/* ---- Pills / badges subtle pop ---- */
+.pill, .status-badge, .badge-normal {
+    transition: transform 0.18s ease-out;
+}
+
+.pill:hover, .status-badge:hover, .badge-normal:hover {
+    transform: translateY(-2px);
+}
+
+/* ---- Accessibility: honour reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+    .fx-rise-in { animation: none; }
+    .nav-dropdown:hover .dropdown-menu,
+    .nav-dropdown:focus-within .dropdown-menu { animation: none; }
+    .fx-tilt { transition: none; }
+    .pill, .status-badge, .badge-normal { transition: none; }
+}

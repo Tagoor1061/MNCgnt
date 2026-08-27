@@ -1,0 +1,66 @@
+{
+    "status": "default",
+    "districts": [
+        {
+            "district": "Guntur",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 85.4,
+            "normal_mm": 62.0,
+            "departure_percent": 37.7,
+            "category": "Heavy Rainfall",
+            "lat": 16.3067,
+            "lon": 80.4365
+        },
+        {
+            "district": "Bapatla",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 72.1,
+            "normal_mm": 58.5,
+            "departure_percent": 23.2,
+            "category": "Heavy Rainfall",
+            "lat": 15.9065,
+            "lon": 80.4675
+        },
+        {
+            "district": "Palnadu",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 48.3,
+            "normal_mm": 51.0,
+            "departure_percent": -5.3,
+            "category": "Moderate Rainfall",
+            "lat": 16.156,
+            "lon": 79.9
+        },
+        {
+            "district": "NTR",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 64.8,
+            "normal_mm": 55.2,
+            "departure_percent": 17.4,
+            "category": "Moderate Rainfall",
+            "lat": 16.5062,
+            "lon": 80.648
+        },
+        {
+            "district": "Krishna",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 91.2,
+            "normal_mm": 60.4,
+            "departure_percent": 51.0,
+            "category": "Very Heavy Rainfall",
+            "lat": 16.7,
+            "lon": 81.1
+        },
+        {
+            "district": "Prakasam",
+            "state": "Andhra Pradesh",
+            "rainfall_mm": 39.6,
+            "normal_mm": 47.8,
+            "departure_percent": -17.2,
+            "category": "Light Rainfall",
+            "lat": 15.55,
+            "lon": 79.5
+        }
+    ],
+    "fetched_at": "2026-08-24 17:19:10"
+}

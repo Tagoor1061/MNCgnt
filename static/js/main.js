@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create notification permission button
     const notificationBtn = document.createElement('button');
     notificationBtn.id = 'notification-btn';
-    notificationBtn.innerHTML = '🔔 Enable Weather Alerts';
+    notificationBtn.innerHTML = 'Enable Weather Alerts';
     notificationBtn.style.cssText = `
       position: fixed;
       bottom: 20px;
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
       notificationBtn.style.display = 'block';
       notificationBtn.addEventListener('click', requestNotificationPermission);
     } else if (Notification.permission === 'granted') {
-      notificationBtn.innerHTML = '🔕 Disable Weather Alerts';
+      notificationBtn.innerHTML = 'Disable Weather Alerts';
       notificationBtn.style.display = 'block';
       notificationBtn.addEventListener('click', unsubscribeFromNotifications);
     }

@@ -1,0 +1,547 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Issue Reporting to the Government{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+                <li><a href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a></li>
+            {% else %}
+                <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            {% endif %}
+            <li><a href="{{ url_for('viewmap.view_map') }}">View Map</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        GOVERNMENT CIVIC ISSUE & GRIEVANCE REPORTING PORTAL
+        <span class="sub-text">Report waterlogging, drainage overflow, potholes & municipal faults directly to municipal officials</span>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="reporting-page-container">
+    <div class="reporting-hero">
+        <div class="hero-badge"><i class="fas fa-landmark"></i> Official Government Grievance Portal</div>
+        <h1>Issue Reporting to the Government</h1>
+        <p>Submit reports for waterlogging, drainage clogging, road potholes, streetlight outages, or civic infrastructure emergencies directly to Guntur Municipal Corporation.</p>
+    </div>
+
+    <!-- How It Works Steps Bar -->
+    <div class="steps-container">
+        <div class="step-card">
+            <div class="step-icon">1</div>
+            <div>
+                <h3>Pin Location</h3>
+                <p>Click on the interactive map or tap GPS button to set exact location coordinates.</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-icon">2</div>
+            <div>
+                <h3>Describe Issue</h3>
+                <p>Describe the flooding, drainage overflow, pothole, or civic fault in detail.</p>
+            </div>
+        </div>
+        <div class="step-card">
+            <div class="step-icon">3</div>
+            <div>
+                <h3>Government Action</h3>
+                <p>Municipal team inspects, acts on-site, and sends instant SMS/email resolution updates.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporting Form Section -->
+    <div class="form-card-box">
+        <h2><i class="fas fa-file-alt"></i> Submit Civic Issue Report</h2>
+
+        <form method="post" action="{{ url_for('main.report_issue') }}">
+            <div class="form-group">
+                <label for="page-issue-desc" class="form-label">Describe Your Civic Issue *</label>
+                <textarea id="page-issue-desc" name="issue" placeholder="Describe the issue in detail (e.g. Severe waterlogging at main junction, overflowing sewage drain, deep road pothole, dark streetlight)..." required class="form-textarea"></textarea>
+            </div>
+
+            <div class="map-picker-box">
+                <div class="map-picker-header">
+                    <h3><i class="fas fa-map-marker-alt"></i> Pin Location on Interactive Map</h3>
+                    <button type="button" id="page-use-gps" class="btn-gps"><i class="fas fa-crosshairs"></i> Use Current GPS Location</button>
+                </div>
+
+                <div id="page-report-map" class="map-view"></div>
+
+                <div id="page-selected-coords" class="coords-info-box">
+                    💡 Click on the map to set exact issue coordinates
+                </div>
+
+                <input type="hidden" name="latitude" id="page-report-lat" value="{{ request.args.get('latitude', '') }}">
+                <input type="hidden" name="longitude" id="page-report-lng" value="{{ request.args.get('longitude', '') }}">
+            </div>
+
+            {% if current_user.is_authenticated %}
+                <button type="submit" class="btn-submit-main"><i class="fas fa-paper-plane"></i> Submit Report to Government</button>
+            {% else %}
+                <div class="login-prompt-card">
+                    <p><i class="fas fa-lock"></i> Please log in or register an account to submit your report directly to the government portal.</p>
+                    <div class="prompt-btns">
+                        <a href="{{ url_for('auth.login') }}" class="btn-login"><i class="fas fa-sign-in-alt"></i> Login to Report</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn-register"><i class="fas fa-user-plus"></i> Register Account</a>
+                    </div>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Issue Categories -->
+    <div class="categories-section">
+        <h2>Major Issue Categories Accepted</h2>
+        <div class="categories-grid">
+            <div class="category-card"><i class="fas fa-water text-blue"></i> <span>Urban Flooding & Waterlogging</span></div>
+            <div class="category-card"><i class="fas fa-toilet text-green"></i> <span>Drainage & Sewage Clogging</span></div>
+            <div class="category-card"><i class="fas fa-road text-orange"></i> <span>Road Potholes & Infrastructure</span></div>
+            <div class="category-card"><i class="fas fa-lightbulb text-yellow"></i> <span>Streetlights & Power Lines</span></div>
+            <div class="category-card"><i class="fas fa-trash-alt text-red"></i> <span>Garbage & Public Sanitation</span></div>
+            <div class="category-card"><i class="fas fa-faucet text-cyan"></i> <span>Water Supply & Pipeline Leakage</span></div>
+        </div>
+    </div>
+
+    <div class="back-home-row">
+        <a href="{{ url_for('main.home') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Back to Home Page</a>
+    </div>
+</div>
+
+<style>
+.reporting-page-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.reporting-hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #eee;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1565c0;
+    font-weight: 700;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #bbdefb;
+}
+
+.reporting-hero h1 {
+    font-size: 2.5rem;
+    color: #1976d2;
+    margin: 0 0 0.8rem 0;
+}
+
+.reporting-hero p {
+    font-size: 1.15rem;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.steps-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.step-card {
+    background: #f0f4f8;
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    border-left: 5px solid #1976d2;
+}
+
+.step-icon {
+    width: 45px;
+    height: 45px;
+    background: #1976d2;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 800;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.step-card h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.15rem;
+    color: #2c3e50;
+}
+
+.step-card p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.form-card-box {
+    background: white;
+    border-radius: 14px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+    margin-bottom: 2.5rem;
+}
+
+.form-card-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #1976d2;
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.map-picker-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1.8rem;
+}
+
+.map-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.map-picker-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.btn-gps {
+    background: #1976d2;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-gps:hover {
+    background: #1565c0;
+}
+
+.map-view {
+    height: 350px;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border: 2px solid #ddd;
+}
+
+.coords-info-box {
+    background: white;
+    border-radius: 8px;
+    padding: 0.9rem;
+    text-align: center;
+    color: #555;
+    font-weight: 600;
+    border: 1px solid #e0e0e0;
+}
+
+.btn-submit-main {
+    width: 100%;
+    background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+    color: white;
+    border: none;
+    padding: 1.1rem;
+    border-radius: 10px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+}
+
+.btn-submit-main:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(25, 118, 210, 0.4);
+}
+
+.login-prompt-card {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    border-radius: 12px;
+    padding: 1.8rem;
+    text-align: center;
+}
+
+.login-prompt-card p {
+    margin: 0 0 1.2rem 0;
+    color: #0d47a1;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.prompt-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-login {
+    background: #2e7d32;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-register {
+    background: #FF851B;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.categories-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.categories-section h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+}
+
+.category-card {
+    background: white;
+    padding: 1.2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.category-card i {
+    font-size: 1.5rem;
+}
+
+.text-blue { color: #1976d2; }
+.text-green { color: #2e7d32; }
+.text-orange { color: #FF851B; }
+.text-yellow { color: #f57f17; }
+.text-red { color: #d32f2f; }
+.text-cyan { color: #00838f; }
+
+.back-home-row {
+    text-align: center;
+}
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    color: #1976d2;
+    border: 2px solid #1976d2;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.btn-back:hover {
+    background: #1976d2;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.L || !document.getElementById('page-report-map')) return;
+
+    const defaultLatLng = [16.3067, 80.4365];
+    const latInput = document.getElementById('page-report-lat');
+    const lngInput = document.getElementById('page-report-lng');
+    const coordsLabel = document.getElementById('page-selected-coords');
+    const map = L.map('page-report-map').setView(defaultLatLng, 13);
+    let marker = null;
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    function setPageLocation(latlng) {
+        const lat = Number(latlng.lat).toFixed(6);
+        const lng = Number(latlng.lng).toFixed(6);
+        if (latInput) latInput.value = lat;
+        if (lngInput) lngInput.value = lng;
+        if (coordsLabel) {
+            coordsLabel.textContent = `✅ Location Selected: ${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+            coordsLabel.style.background = '#e8f5e9';
+            coordsLabel.style.color = '#2e7d32';
+            coordsLabel.style.borderColor = '#2e7d32';
+        }
+
+        if (marker) {
+            marker.setLatLng(latlng);
+            return;
+        }
+
+        marker = L.marker(latlng, { draggable: true }).addTo(map);
+        marker.on('dragend', function(event) {
+            setPageLocation(event.target.getLatLng());
+        });
+    }
+
+    map.on('click', function(event) {
+        setPageLocation(event.latlng);
+    });
+
+    if (latInput && lngInput && latInput.value && lngInput.value) {
+        const existing = L.latLng(Number(latInput.value), Number(lngInput.value));
+        setPageLocation(existing);
+        map.setView(existing, 16);
+    }
+
+    const gpsBtn = document.getElementById('page-use-gps');
+    if (gpsBtn) {
+        gpsBtn.addEventListener('click', function() {
+            if (!navigator.geolocation) {
+                if (coordsLabel) coordsLabel.textContent = '⚠️ Your browser does not support location access. Click the map instead.';
+                return;
+            }
+
+            if (coordsLabel) {
+                coordsLabel.textContent = '🔍 Locating your position via GPS...';
+                coordsLabel.style.background = '#e3f2fd';
+                coordsLabel.style.color = '#1976d2';
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const current = L.latLng(position.coords.latitude, position.coords.longitude);
+                    setPageLocation(current);
+                    map.setView(current, 16);
+                },
+                function() {
+                    if (coordsLabel) {
+                        coordsLabel.textContent = '📍 GPS permission denied. Please click on the map to set location.';
+                        coordsLabel.style.background = '#ffebee';
+                        coordsLabel.style.color = '#d32f2f';
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+            );
+        });
+    }
+});
+</script>
+{% endblock %}

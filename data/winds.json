@@ -1,0 +1,32 @@
+{
+    "disaster": "winds",
+    "wind_speed_kph": 45,
+    "gust_speed_kph": 62,
+    "wind_direction": "ENE",
+    "high_wind_alerts": 1,
+    "gale_zones": [
+        {
+            "name": "Guntur East & Coastal Corridor",
+            "risk": "Moderate",
+            "color": "#00695c",
+            "polygon": [
+                [
+                    16.25,
+                    80.4
+                ],
+                [
+                    16.35,
+                    80.5
+                ],
+                [
+                    16.28,
+                    80.58
+                ],
+                [
+                    16.2,
+                    80.45
+                ]
+            ]
+        }
+    ]
+}

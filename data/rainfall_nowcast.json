@@ -1,0 +1,47 @@
+{
+    "status": "default",
+    "station": "Guntur",
+    "issued_at": null,
+    "alerts_count": 2,
+    "nowcast": [
+        {
+            "time": "+1h",
+            "precipitation_mm": 12.5,
+            "intensity": "moderate",
+            "alert": false
+        },
+        {
+            "time": "+2h",
+            "precipitation_mm": 28.0,
+            "intensity": "heavy",
+            "alert": true,
+            "message": "Heavy spell expected \u2014 avoid waterlogged underpasses."
+        },
+        {
+            "time": "+3h",
+            "precipitation_mm": 35.4,
+            "intensity": "very heavy",
+            "alert": true,
+            "message": "Very heavy convective spell; move vehicles to higher ground."
+        },
+        {
+            "time": "+4h",
+            "precipitation_mm": 18.2,
+            "intensity": "moderate",
+            "alert": false
+        },
+        {
+            "time": "+5h",
+            "precipitation_mm": 6.0,
+            "intensity": "light",
+            "alert": false
+        },
+        {
+            "time": "+6h",
+            "precipitation_mm": 2.1,
+            "intensity": "light",
+            "alert": false
+        }
+    ],
+    "fetched_at": "2026-08-24 17:19:19"
+}

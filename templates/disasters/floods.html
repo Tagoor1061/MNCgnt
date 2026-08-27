@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Floods & Urban Inundation Management{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        URBAN FLOOD & INUNDATION EMERGENCY PORTAL
+        <span class="sub-text">River Water Level Tracking, Drainage Pump Controls & High-Risk Flood Map</span>
+    </div>
+</div>
+
+<div class="disaster-detail-container">
+    <div class="detail-hero hero-floods">
+        <div class="hero-badge-item"><i class="fas fa-water"></i> Flood Control Command Center</div>
+        <h1>🌧️ Floods & Urban Inundation Management</h1>
+        <p>Real-time river level tracking, drainage canal monitoring, automated flood risk mapping, and municipal emergency de-watering operations for Guntur Corporation.</p>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="status-card-box">
+        <div class="status-info">
+            <h3><i class="fas fa-tint"></i> Live Rainfall & Drainage Status</h3>
+            <p>Krishna River & City Drainage Canal System real-time depth monitoring.</p>
+            <div class="status-pills">
+                <span class="pill pill-green"><i class="fas fa-check-circle"></i> Flood Danger Level: Normal</span>
+                <span class="pill pill-blue"><i class="fas fa-cloud-showers-heavy"></i> City Rainfall: {{ weather.condition if weather and weather.condition else 'Light Rain / Advisory' }}</span>
+            </div>
+        </div>
+        <div class="status-actions">
+            <a href="{{ url_for('viewmap.view_map') }}" class="btn-detail-action btn-blue"><i class="fas fa-map-marked-alt"></i> Open Flood Risk Map</a>
+            <button class="btn-detail-action btn-green" onclick="subscribeToNotifications()"><i class="fas fa-bell"></i> Enable Flood Push Alerts</button>
+        </div>
+    </div>
+
+    <!-- Machine Learning Analytics & Predictive Chart -->
+    <div class="disaster-chart-widget" data-disaster="floods" id="chart-widget-floods"></div>
+
+    <!-- Flood Preparedness Unit — IMD + Open-Meteo + Google AI Dashboard -->
+    <div id="flood-preparedness-widget"></div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lib/leaflet.css') }}" />
+    <script src="{{ url_for('static', filename='lib/leaflet.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/chart.umd.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/FloodPreparednessUnit.js') }}"></script>
+
+    <!-- Key Information Grid -->
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="card-head text-blue"><i class="fas fa-shield-alt"></i> Municipal Flood Protocols</div>
+            <ul>
+                <li><strong>24/7 Pump Station Operations:</strong> Heavy duty de-watering pumps active at all low-lying areas.</li>
+                <li><strong>Canal Clearing Teams:</strong> Automated desilting and trash-rack clearing across major city drains.</li>
+                <li><strong>Krishna Barrage Discharge Watch:</strong> Inflow & outflow discharge rate monitoring.</li>
+                <li><strong>Low-Lying Area Warnings:</strong> Automated SMS alerts to residents in flood-prone wards.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-green"><i class="fas fa-home"></i> Relief & Shelter Centers</div>
+            <ul>
+                <li>Community halls and municipal schools prepared as temporary flood relief shelters.</li>
+                <li>Provision of clean drinking water, food packets, and medical health kits.</li>
+                <li>Emergency boat rescue units stationed near Krishna riverbank villages.</li>
+                <li>Health camps for water-borne disease prevention after flood subsidence.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-red"><i class="fas fa-phone-alt"></i> Flood Control Helplines</div>
+            <div class="contact-list">
+                <div class="contact-line"><span>Flood Control Room:</span> <strong>0863-2224400</strong></div>
+                <div class="contact-line"><span>GMC Disaster Helpline:</span> <strong>1800-425-0001</strong></div>
+                <div class="contact-line"><span>State Emergency Ops (SDMA):</span> <strong>1070</strong></div>
+                <div class="contact-line"><span>NDRF Rescue Response:</span> <strong>011-24363260</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Steps -->
+    <div class="safety-steps-box">
+        <h2><i class="fas fa-life-ring"></i> Flood Safety Guidelines for Citizens</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>1. Flood Warning Phase</h3>
+                <p>Move valuables, food supplies, and electrical equipment to higher floors. Turn off main gas and electricity switches if water enters home.</p>
+            </div>
+            <div class="step-item">
+                <h3>2. Active Inundation</h3>
+                <p>Never drive or wade through flooded streets or open drains. Fast-moving water as shallow as 6 inches can sweep you off your feet.</p>
+            </div>
+            <div class="step-item">
+                <h3>3. Post-Flood Recovery</h3>
+                <p>Boil drinking water before consumption. Report clogged culverts, waterlogging, or damaged pipelines immediately via our portal.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons-row">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report Waterlogging to Government</a>
+    </div>
+</div>
+
+<style>
+.disaster-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.detail-hero {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.hero-floods {
+    background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+}
+
+.hero-badge-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.detail-hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.8rem 0;
+}
+
+.detail-hero p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.status-card-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1.8rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.status-info h3 {
+    margin: 0 0 0.4rem 0;
+    color: #2c3e50;
+}
+
+.status-info p {
+    margin: 0 0 0.8rem 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-pills {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pill-green { background: #e8f5e9; color: #2e7d32; }
+.pill-blue { background: #e3f2fd; color: #1565c0; }
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-detail-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-blue { background: #1565c0; }
+.btn-green { background: #2e7d32; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card-head {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.text-blue { color: #1565c0; }
+.text-green { color: #2e7d32; }
+.text-red { color: #d32f2f; }
+
+.info-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 0.93rem;
+}
+
+.contact-line {
+    background: #ffebee;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    color: #b71c1c;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.safety-steps-box {
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.safety-steps-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.step-item h3 {
+    margin: 0 0 0.6rem 0;
+    color: #1565c0;
+    font-size: 1.15rem;
+}
+
+.step-item p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.nav-buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-nav-back {
+    background: white;
+    color: #1565c0;
+    border: 2px solid #1565c0;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-nav-report {
+    background: #1565c0;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+</style>
+{% endblock %}

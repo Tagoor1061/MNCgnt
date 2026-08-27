@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Heavy Rainfall & Extreme Precipitation Management{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        HEAVY RAINFALL & PRECIPITATION EMERGENCY PORTAL
+        <span class="sub-text">Automated Rain Gauge Network, Cloudburst Warnings & Stormwater Management</span>
+    </div>
+</div>
+
+<div class="disaster-detail-container">
+    <div class="detail-hero hero-rainfall">
+        <div class="hero-badge-item"><i class="fas fa-cloud-rain"></i> Precipitation & Stormwater Unit</div>
+        <h1>🌧️ Heavy Rainfall & Extreme Precipitation</h1>
+        <p>Real-time rain gauge monitoring, intense cloudburst detection, automated precipitation advisories, and municipal stormwater channel management for Guntur Region.</p>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="status-card-box">
+        <div class="status-info">
+            <h3><i class="fas fa-cloud-showers-heavy"></i> Live Rain Gauge Status</h3>
+            <p>Monitored in coordination with India Meteorological Department (IMD) & Municipal Automated Weather Stations.</p>
+            <div class="status-pills">
+                <span class="pill pill-blue"><i class="fas fa-tint"></i> 24h Accumulated Rainfall: 85.4 mm</span>
+                <span class="pill pill-orange"><i class="fas fa-exclamation-circle"></i> Advisory: Heavy Downpour Warning</span>
+            </div>
+        </div>
+        <div class="status-actions">
+            <a href="{{ url_for('weather.weather_dashboard') }}" class="btn-detail-action btn-blue"><i class="fas fa-cloud-sun-rain"></i> Open Weather Dashboard</a>
+            <button class="btn-detail-action btn-green" onclick="subscribeToNotifications()"><i class="fas fa-bell"></i> Enable Heavy Rain Push Alerts</button>
+        </div>
+    </div>
+
+    <!-- Rainfall Preparedness Unit: IMD APIs + AI/ML Prediction + Leaflet Map -->
+    <div id="rainfall-preparedness-widget"></div>
+
+    <!-- Key Information Grid -->
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="card-head text-blue"><i class="fas fa-cloud-meatball"></i> IMD Rainfall Warning Scale</div>
+            <ul>
+                <li><strong>Light Rain (15.6 – 64.4 mm):</strong> Normal monsoon conditions; slight drainage runoff.</li>
+                <li><strong>Heavy Rain (64.5 – 115.5 mm):</strong> Yellow/Orange warning; potential low-lying waterlogging.</li>
+                <li><strong>Very Heavy Rain (115.6 – 204.4 mm):</strong> Orange/Red warning; municipal de-watering active.</li>
+                <li><strong>Extremely Heavy Rain (>204.5 mm):</strong> Red alert; risk of severe urban inundation.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-green"><i class="fas fa-water"></i> Stormwater Drainage Protocols</div>
+            <ul>
+                <li>Heavy duty de-watering pumps deployed at major underpasses and low-lying residential wards.</li>
+                <li>Automated trash-rack clearing across major city drains and culverts.</li>
+                <li>Continuous monitoring of Guntur Canal inflow and discharge rates.</li>
+                <li>Emergency sandbag bunding pre-positioned near vulnerable wards.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-red"><i class="fas fa-phone-alt"></i> Emergency Rainfall Helplines</div>
+            <div class="contact-list">
+                <div class="contact-line"><span>NDMA National Helpline:</span> <strong>1078</strong></div>
+                <div class="contact-line"><span>State Emergency Ops (SDMA):</span> <strong>1070</strong></div>
+                <div class="contact-line"><span>GMC Stormwater Control Room:</span> <strong>1800-425-0001</strong></div>
+                <div class="contact-line"><span>District Disaster Management:</span> <strong>0863-2234014</strong></div>
+                <div class="contact-line"><span>Police Control Room:</span> <strong>100</strong></div>
+                <div class="contact-line"><span>Fire &amp; Rescue Response:</span> <strong>101</strong></div>
+                <div class="contact-line"><span>Ambulance / Medical Emergency:</span> <strong>108</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Safety Steps -->
+    <!-- Flood / Heavy Rain Survival Actions -->
+    <div class="safety-steps-box" style="background:#fff8e1; border:1px solid #ffe082;">
+        <h2><i class="fas fa-life-ring"></i> Flood & Heavy Rain Survival Actions</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>🚶 Move to Higher Ground</h3>
+                <p>If water enters your street or home, move immediately to higher floors or designated relief shelters. Never walk or drive through moving floodwater — 15 cm of fast water can knock an adult down.</p>
+            </div>
+            <div class="step-item">
+                <h3>🎒 Prepare an Emergency Kit</h3>
+                <p>Keep drinking water, dry food, torch, power bank, first-aid, essential medicines, radio, whistle and documents in a waterproof bag — ready to grab in 5 minutes.</p>
+            </div>
+            <div class="step-item">
+                <h3>🔌 Disconnect Electrical Appliances</h3>
+                <p>Switch off mains and unplug appliances before water reaches sockets. Never touch electrical switches with wet hands; report snapped wires to the Electricity Emergency 1912.</p>
+            </div>
+            <div class="step-item">
+                <h3>🚗 Avoid Flooded Routes</h3>
+                <p>Do not enter waterlogged underpasses, culverts or canal banks. Turn around — don't drown. Park vehicles on elevated ground away from trees and hoardings.</p>
+            </div>
+            <div class="step-item">
+                <h3>📢 Follow Official Alerts</h3>
+                <p>Track IMD Red/Orange/Yellow warnings on this page and enable push alerts. Cooperate with municipal de-watering and rescue teams.</p>
+            </div>
+            <div class="step-item">
+                <h3>💧 After the Rain</h3>
+                <p>Boil drinking water, avoid contact with stagnant water (electrocution & disease risk), report open manholes and clogged drains via this portal immediately.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="safety-steps-box">
+        <h2><i class="fas fa-shield-alt"></i> Extreme Rainfall Safety & Preparedness Steps</h2>
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>1. Before Heavy Downpour</h3>
+                <p>Clean terrace outlets and household storm drains. Keep emergency torches, power banks, and essential dry provisions ready.</p>
+            </div>
+            <div class="step-item">
+                <h3>2. During Torrential Rain</h3>
+                <p>Avoid driving through flooded underpasses or open drains. Stay clear of submerged electric poles and transformers.</p>
+            </div>
+            <div class="step-item">
+                <h3>3. After Rainfall Subsides</h3>
+                <p>Boil drinking water before consumption. Report waterlogging, open manholes, or clogged drains immediately via our portal.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons-row">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report Waterlogging to Government</a>
+    </div>
+</div>
+
+<style>
+.disaster-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.detail-hero {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.hero-rainfall {
+    background: linear-gradient(135deg, #0288d1 0%, #01579b 100%);
+}
+
+.hero-badge-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.detail-hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.8rem 0;
+}
+
+.detail-hero p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.status-card-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1.8rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.status-info h3 {
+    margin: 0 0 0.4rem 0;
+    color: #2c3e50;
+}
+
+.status-info p {
+    margin: 0 0 0.8rem 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-pills {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pill-orange { background: #fff3e0; color: #e65100; }
+.pill-blue { background: #e3f2fd; color: #1565c0; }
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-detail-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-blue { background: #0288d1; }
+.btn-green { background: #2e7d32; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card-head {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.text-blue { color: #0288d1; }
+.text-green { color: #2e7d32; }
+.text-red { color: #d32f2f; }
+
+.info-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 0.93rem;
+}
+
+.contact-line {
+    background: #e1f5fe;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    color: #01579b;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.safety-steps-box {
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.safety-steps-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.step-item h3 {
+    margin: 0 0 0.6rem 0;
+    color: #0288d1;
+    font-size: 1.15rem;
+}
+
+.step-item p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.nav-buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-nav-back {
+    background: white;
+    color: #0288d1;
+    border: 2px solid #0288d1;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-nav-report {
+    background: #0288d1;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+</style>
+
+<script src="{{ url_for('static', filename='js/RainfallPreparednessUnit.js') }}"></script>
+{% endblock %}

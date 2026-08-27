@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block body_class %}other-page{% endblock %}
+
+{% block title %}Cyclone & Storm Surge Management{% endblock %}
+
+{% block content %}
+<nav class="main-navbar">
+    <img src="{{ url_for('static', filename='img/final_logo.png') }}" alt="Guntur Logo" class="logo" onerror="this.style.display='none'">
+    <span class="main-title">Suraksha Kavach
+        <div class="main-subtitle">DEPARTMENT OF GOVERNMENT MUNICIPAL CORPORATION </div>
+    </span>
+</nav>
+
+<nav class="secondary-navbar">
+    <ul>
+        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+
+        <!-- Natural Disasters Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.natural_disasters') }}">Natural Disasters <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.natural_disasters') }}"><i class="fas fa-shield-alt text-orange"></i> All Disasters Overview</a></li>
+                <li><a href="{{ url_for('main.disaster_cyclone') }}"><i class="fas fa-wind text-orange"></i> 🌀 Cyclone Section</a></li>
+                <li><a href="{{ url_for('main.disaster_tsunami') }}"><i class="fas fa-water text-cyan"></i> 🌊 Tsunami Section</a></li>
+                <li><a href="{{ url_for('main.disaster_floods') }}"><i class="fas fa-cloud-showers-heavy text-blue"></i> 🌧️ Floods Section</a></li>
+                <li><a href="{{ url_for('main.disaster_earthquakes') }}"><i class="fas fa-building text-purple"></i> 🏚️ Earthquakes Section</a></li>
+                <li><a href="{{ url_for('main.disaster_winds') }}"><i class="fas fa-fan text-teal"></i> 💨 Winds Section</a></li>
+                <li><a href="{{ url_for('main.disaster_rainfall') }}"><i class="fas fa-cloud-rain text-blue"></i> 🌧️ Rainfall Section</a></li>
+                <li><a href="{{ url_for('main.disaster_landslides') }}"><i class="fas fa-mountain text-brown"></i> ⛰️ Landslides Section</a></li>
+            </ul>
+        </li>
+
+        <!-- Report Issue Dropdown -->
+        <li class="nav-dropdown">
+            <a href="{{ url_for('main.issue_reporting_page') }}">Report Issue <i class="fas fa-caret-down"></i></a>
+            <ul class="dropdown-menu">
+                <li><a href="{{ url_for('main.issue_reporting_page') }}"><i class="fas fa-file-signature text-blue"></i> 🏛️ Submit Issue Report</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.dashboard') }}"><i class="fas fa-tasks text-green"></i> 📊 Track Reported Issues</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}"><i class="fas fa-sign-in-alt text-orange"></i> 🔑 Login to Track Issues</a></li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <li><a href="{{ url_for('main.learn') }}">Learn & Quiz</a></li>
+        <li><a href="{{ url_for('news.news') }}">News</a></li>
+        <li><a href="{{ url_for('services.services') }}">Services</a></li>
+        <li><a href="{{ url_for('about.about') }}">About</a></li>
+        {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<div class="marquee-container">
+    <div class="marquee">
+        CYCLONE & STORM SURGE EMERGENCY PORTAL
+        <span class="sub-text">Coastal Gale Warnings, Storm Trajectory Tracking & Emergency Evacuation Protocols</span>
+    </div>
+</div>
+
+<div class="disaster-detail-container">
+    <div class="detail-hero hero-cyclone">
+        <div class="hero-badge-item"><i class="fas fa-wind"></i> Emergency Response Unit</div>
+        <h1>🌀 Cyclone & Storm Surge Management</h1>
+        <p>Comprehensive cyclone monitoring, coastal storm surge alerts, relief shelter locations, and disaster evacuation guidance for Andhra Pradesh & Guntur Region.</p>
+    </div>
+
+    <!-- Live Status Banner -->
+    <div class="status-card-box">
+        <div class="status-info">
+            <h3><i class="fas fa-satellite"></i> Cyclone Alert Status</h3>
+            <p>Monitored in coordination with India Meteorological Department (IMD) & AP State Disaster Management Authority.</p>
+            <div class="status-pills">
+                <span class="pill pill-green"><i class="fas fa-check-circle"></i> Bay of Bengal Trajectory: Normal</span>
+                <span class="pill pill-blue"><i class="fas fa-wind"></i> Wind Speed: {{ weather.wind_kph if weather and weather.wind_kph else '14' }} km/h</span>
+            </div>
+        </div>
+        <div class="status-actions">
+            <a href="{{ url_for('news.news') }}?q=cyclone" class="btn-detail-action btn-orange"><i class="fas fa-newspaper"></i> Read Cyclone News</a>
+            <button class="btn-detail-action btn-green" onclick="subscribeToNotifications()"><i class="fas fa-bell"></i> Enable Cyclone Push Alerts</button>
+        </div>
+    </div>
+
+    <!-- IMD Advisories & Cyclone Bulletins -->
+    <div class="imd-bulletin-card" style="background:#fff3e0; border:2px solid #e65100; border-radius:12px; padding:1.5rem; margin-bottom:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+            <h3 style="margin:0; color:#e65100; display:flex; align-items:center; gap:0.6rem; font-size:1.3rem;">
+                <i class="fas fa-bullhorn"></i> Official IMD Cyclone Advisories & Bulletins
+            </h3>
+            <span style="background:#e65100; color:#fff; padding:4px 12px; border-radius:20px; font-weight:700; font-size:0.85rem;">
+                IMD Bulletin No. 12 / 2025
+            </span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1.2rem; background:#ffffff; padding:1.2rem; border-radius:8px; border:1px solid #ffe0b2;">
+            <div>
+                <strong>🌀 Storm Category:</strong> Very Severe Cyclonic Storm
+                <p style="margin:0.3rem 0 0 0; color:#555; font-size:0.92rem;">Deep depression over Westcentral Bay of Bengal intensified into Very Severe Cyclonic Storm.</p>
+            </div>
+            <div>
+                <strong>⚡ Max Wind Speed & Gusts:</strong> 120 km/h (Gusts 140 km/h)
+                <p style="margin:0.3rem 0 0 0; color:#555; font-size:0.92rem;">Heavy to extremely heavy rainfall warning issued for Guntur, Krishna, and Bapatla districts.</p>
+            </div>
+            <div>
+                <strong>🌊 Marine & Fishermen Advisory:</strong> Red Alert
+                <p style="margin:0.3rem 0 0 0; color:#b71c1c; font-weight:600; font-size:0.92rem;">Total suspension of fishing operations off Andhra Pradesh coast. High surge warning active.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Machine Learning Analytics & Predictive Chart + Map -->
+    <div class="disaster-chart-widget" data-disaster="cyclones" id="chart-widget-cyclones"></div>
+
+    <!-- Key Information Grid -->
+    <div class="detail-grid">
+        <div class="info-card">
+            <div class="card-head text-orange"><i class="fas fa-exclamation-triangle"></i> Warning Categories & Stages</div>
+            <ul>
+                <li><strong>Pre-Cyclone Watch:</strong> Issued 72 hours prior to storm onset.</li>
+                <li><strong>Cyclone Alert:</strong> Issued 48 hours in advance for coastal districts.</li>
+                <li><strong>Cyclone Warning:</strong> Issued 24 hours before expected landfall.</li>
+                <li><strong>Post-Landfall Outlook:</strong> Guidance on inland high wind propagation.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-blue"><i class="fas fa-campground"></i> Evacuation Routes & Shelters</div>
+            <ul>
+                <li><strong>Designated Shelters:</strong> Multipurpose Cyclone Shelters located across Nizampatnam, Bapatla, and coastal Guntur.</li>
+                <li><strong>Evacuation Routes:</strong> Coastal NH-216 and Guntur-Bapatla Highway designated as primary evacuation corridors.</li>
+                <li><strong>Relief Facilities:</strong> Clean drinking water, hot cooked meals, and emergency medical kits pre-positioned.</li>
+                <li><strong>Power Backup:</strong> Diesel generators active at all designated relief centers.</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <div class="card-head text-green"><i class="fas fa-phone-alt"></i> Emergency Helplines</div>
+            <div class="contact-list">
+                <div class="contact-line"><span>NDMA National Emergency:</span> <strong>1078</strong></div>
+                <div class="contact-line"><span>State Disaster Ops (SDMA):</span> <strong>1070</strong></div>
+                <div class="contact-line"><span>Fire & Rescue Services:</span> <strong>101</strong></div>
+                <div class="contact-line"><span>GMC Disaster Control Room:</span> <strong>1800-425-0001</strong></div>
+                <div class="contact-line"><span>Coast Guard Search & Rescue:</span> <strong>1554</strong></div>
+                <div class="contact-line"><span>Police Emergency:</span> <strong>112 / 100</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Survival Actions & Emergency Kit -->
+    <div class="safety-steps-box">
+        <h2><i class="fas fa-medkit"></i> Cyclone Survival Actions & Emergency Kit Guide</h2>
+        <div style="background:#ffffff; border-radius:10px; padding:1.2rem; margin-bottom:1.5rem; border-left:5px solid #e65100; box-shadow:0 4px 10px rgba(0,0,0,0.04);">
+            <h3 style="margin:0 0 0.6rem 0; color:#e65100;"><i class="fas fa-first-aid"></i> Mandatory Emergency Survival Kit Checklist</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.8rem; font-size:0.93rem; color:#444;">
+                <div>✔️ Drinking water (3 Liters/person/day for 3 days)</div>
+                <div>✔️ Non-perishable dry food & canned goods</div>
+                <div>✔️ Battery-operated torch with spare batteries</div>
+                <div>✔️ First-aid kit & essential daily medications</div>
+                <div>✔️ Fully charged power banks & battery radio</div>
+                <div>✔️ Whistle, rope, multi-tool knife & waterproof pouch for IDs</div>
+            </div>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-item">
+                <h3>1. Before Cyclone (Pre-Storm Action)</h3>
+                <p>Secure loose roof sheets, trim weak tree branches, stock emergency kit, charge all communication devices, and know your nearest designated cyclone shelter route.</p>
+            </div>
+            <div class="step-item">
+                <h3>2. During Cyclone (Active Storm Safety)</h3>
+                <p>Stay indoors in the strongest part of your home away from windows and glass doors. Disconnect electrical mains and gas supply. Move to an official shelter immediately if instructed.</p>
+            </div>
+            <div class="step-item">
+                <h3>3. After Cyclone (Post-Storm Recovery)</h3>
+                <p>Beware of fallen electrical wires and loose poles. Do not enter damaged structures until certified safe. Drink boiled water and report tree falls or power hazards to GMC.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons-row">
+        <a href="{{ url_for('main.natural_disasters') }}" class="btn-nav-back"><i class="fas fa-arrow-left"></i> Back to Natural Disasters Portal</a>
+        <a href="{{ url_for('main.issue_reporting_page') }}" class="btn-nav-report"><i class="fas fa-bullhorn"></i> Report Storm Damage to Government</a>
+    </div>
+</div>
+
+<style>
+.disaster-detail-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(255,255,255,0.96);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.detail-hero {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 14px;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.hero-cyclone {
+    background: linear-gradient(135deg, #e65100 0%, #f57c00 100%);
+}
+
+.hero-badge-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.detail-hero h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.8rem 0;
+}
+
+.detail-hero p {
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    opacity: 0.95;
+    line-height: 1.6;
+}
+
+.status-card-box {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    padding: 1.8rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.status-info h3 {
+    margin: 0 0 0.4rem 0;
+    color: #2c3e50;
+}
+
+.status-info p {
+    margin: 0 0 0.8rem 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-pills {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.pill {
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pill-green { background: #e8f5e9; color: #2e7d32; }
+.pill-blue { background: #e3f2fd; color: #1565c0; }
+
+.status-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.btn-detail-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.4rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-detail-action:hover {
+    transform: translateY(-2px);
+}
+
+.btn-orange { background: #FF851B; }
+.btn-green { background: #2e7d32; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: #fdfdfd;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card-head {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.text-orange { color: #e65100; }
+.text-blue { color: #1565c0; }
+.text-green { color: #2e7d32; }
+
+.info-card ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #444;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.info-card li {
+    margin-bottom: 0.5rem;
+}
+
+.contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-size: 0.93rem;
+}
+
+.contact-line {
+    background: #e8f5e9;
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    color: #1b5e20;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.safety-steps-box {
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.safety-steps-box h2 {
+    margin: 0 0 1.5rem 0;
+    color: #2c3e50;
+    font-size: 1.4rem;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.step-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.step-item h3 {
+    margin: 0 0 0.6rem 0;
+    color: #e65100;
+    font-size: 1.15rem;
+}
+
+.step-item p {
+    margin: 0;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.nav-buttons-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-nav-back {
+    background: white;
+    color: #1565c0;
+    border: 2px solid #1565c0;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.btn-nav-report {
+    background: #1565c0;
+    color: white;
+    padding: 0.8rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+}
+</style>
+{% endblock %}

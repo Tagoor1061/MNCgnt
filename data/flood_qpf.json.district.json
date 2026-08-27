@@ -1,0 +1,33 @@
+{
+    "districts": [
+        {
+            "district": "Guntur",
+            "rainfall_mm": 118.6,
+            "normal_mm": 62.1,
+            "departure_percent": 91.0,
+            "category": "Very Heavy",
+            "lat": 16.3067,
+            "lon": 80.4365
+        },
+        {
+            "district": "Bapatla",
+            "rainfall_mm": 96.2,
+            "normal_mm": 58.4,
+            "departure_percent": 64.7,
+            "category": "Heavy",
+            "lat": 15.9049,
+            "lon": 80.4675
+        },
+        {
+            "district": "Palnadu",
+            "rainfall_mm": 54.7,
+            "normal_mm": 44.0,
+            "departure_percent": 24.3,
+            "category": "Moderate",
+            "lat": 16.1067,
+            "lon": 79.9365
+        }
+    ],
+    "status": "default",
+    "fetched_at": "2026-08-24 17:19:08"
+}

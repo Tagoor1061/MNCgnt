@@ -1,29 +1,46 @@
 from app import db, create_app
 from app.models import User
+from sqlalchemy import inspect, text
 
-# Create app instance
-app = create_app()
+def ensure_schema_updated():
+    try:
+        inspector = inspect(db.engine)
+        columns = [c['name'] for c in inspector.get_columns('user')]
+        if 'phone' not in columns:
+            db.session.execute(text('ALTER TABLE user ADD COLUMN phone VARCHAR(20)'))
+            db.session.commit()
+    except Exception as exc:
+        db.session.rollback()
 
-# Create tables inside app context
-with app.app_context():
-    db.create_all()
-    print("✅ Tables created successfully!")
-
-    # Insert default admin users if they don't exist
+def seed_admin_users():
+    ensure_schema_updated()
+    # Insert or update default admin accounts
     admin1_email = 'tagoorncc10@gmail.com'
     admin2_email = 'archanasenapathi63@gmail.com'
 
-    if not User.query.filter_by(email=admin1_email).first():
+    # Admin 1
+    admin1 = User.query.filter((User.email == admin1_email) | (User.username == 'admin1')).first()
+    if not admin1:
         admin1 = User(username='admin1', email=admin1_email, role='admin')
-        admin1.set_password('2007')
         db.session.add(admin1)
-        print(f"✅ Admin user {admin1_email} created.")
+    admin1.email = admin1_email
+    admin1.set_password('Nani10@gmail.com')
+    admin1.role = 'admin'
 
-    if not User.query.filter_by(email=admin2_email).first():
+    # Admin 2
+    admin2 = User.query.filter((User.email == admin2_email) | (User.username == 'admin2')).first()
+    if not admin2:
         admin2 = User(username='admin2', email=admin2_email, role='admin')
-        admin2.set_password('44')
         db.session.add(admin2)
-        print(f"✅ Admin user {admin2_email} created.")
+    admin2.email = admin2_email
+    admin2.set_password('44')
+    admin2.role = 'admin'
 
     db.session.commit()
-    print("✅ Default admin users inserted successfully!")
+    print("[SUCCESS] Admin accounts seeded successfully!")
+
+if __name__ == "__main__":
+    app = create_app()
+    with app.app_context():
+        db.create_all()
+        seed_admin_users()

@@ -4,14 +4,37 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'your-secret-key-here')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///guntur.db')
+
+    # Always use absolute path to instance/guntur.db so the database is always consistent
+    instance_dir = os.path.join(basedir, 'instance')
+    os.makedirs(instance_dir, exist_ok=True)
+    db_file = os.path.join(instance_dir, 'guntur.db')
+
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'sqlite:///{db_file}')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Web Push VAPID keys (generate your own for production)
-    VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', 'your-private-vapid-key')
-    VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', 'your-public-vapid-key')
+    # External service keys. Keep real values in .env, not in source control.
+    NEWS_API_KEY = os.getenv('NEWS_API_KEY', 'ec55f5b477c64bc193309f58a060e03e')
+    OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY', '')
+    WEATHER_LATITUDE = float(os.getenv('WEATHER_LATITUDE', '16.3067'))
+    WEATHER_LONGITUDE = float(os.getenv('WEATHER_LONGITUDE', '80.4365'))
+    WEATHER_CITY = os.getenv('WEATHER_CITY', 'Guntur')
+
+    # Web Push VAPID keys. Generate these for each deployment.
+    VAPID_PRIVATE_KEY = os.getenv('VAPID_PRIVATE_KEY', '')
+    VAPID_PUBLIC_KEY = os.getenv('VAPID_PUBLIC_KEY', '')
     VAPID_CLAIMS = {
-        'sub': 'mailto:admin@gunturmunicipal.com'
+        'sub': os.getenv('VAPID_CONTACT', 'mailto:admin@gunturmunicipal.com')
     }
+
+    # Mail Server Configuration
+    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', '587'))
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'true').lower() == 'true'
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'Guntur Municipal Corporation <info@municipalcorporation.gov>')
