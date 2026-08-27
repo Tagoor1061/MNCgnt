@@ -1,0 +1,11 @@
+venv/
+.env
+.git/
+__pycache__/
+*.pyc
+flask-err.log
+flask-out.log
+qa_*.py
+qa_*.mjs
+qa_*.txt
+test_*.py

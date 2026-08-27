@@ -1,9 +1,10 @@
 import ast
+import os
 
 # Compatibility shim for Python 3.14+ when older Werkzeug/Flask packages still reference legacy AST node names.
 if not hasattr(ast, 'Str'):
     class Str(ast.Constant):
-        def __init__(self, s, kind=None, **kwargs):
+        def __init__(self, s='', kind=None, **kwargs):
             super().__init__(value=s, kind=kind, **kwargs)
 
         @property
@@ -18,14 +19,14 @@ if not hasattr(ast, 'Str'):
 
 if not hasattr(ast, 'Num'):
     class Num(ast.Constant):
-        def __init__(self, n, **kwargs):
+        def __init__(self, n=0, **kwargs):
             super().__init__(value=n, **kwargs)
 
         @property
         def n(self):
             return self.value
 
-        @n.setter
+        @s.setter
         def n(self, value):
             self.value = value
 
@@ -42,8 +43,12 @@ app = create_app()
 
 # Create tables and seed default admin users if they don't exist
 with app.app_context():
-    db.create_all()
-    seed_admin_users()
+    try:
+        db.create_all()
+        seed_admin_users()
+    except Exception as exc:
+        print(f"Database initialization notice: {exc}")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
