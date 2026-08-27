@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Suraksha Kavach - Guntur Municipal Corporation (GMC). Smart Civic Grievance Redressal, Real-Time Natural Disaster Early Warning, and Emergency Response Portal.">
+    <meta name="keywords" content="Guntur Municipal Corporation, GMC, Suraksha Kavach, Disaster Management, Civic Issues, Andhra Pradesh, Cyclone Alert, Flood Warning">
+    <meta name="author" content="Guntur Municipal Corporation">
+    <title>Suraksha Kavach | Guntur Municipal Corporation — Smart Disaster & Civic Portal</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Leaflet GIS Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <!-- Project Stylesheets (Local with fallback handling) -->
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link rel="stylesheet" href="static/css/effects3d.css">
+
+    <style>
+        :root {
+            --bg-dark: #07101e;
+            --bg-card: rgba(16, 29, 52, 0.85);
+            --bg-card-hover: rgba(24, 43, 76, 0.95);
+            --border-glow: rgba(0, 210, 255, 0.25);
+            --primary-accent: #00d2ff;
+            --secondary-accent: #3a7bd5;
+            --emergency-orange: #ff5e36;
+            --emergency-red: #ef4444;
+            --safe-green: #10b981;
+            --warning-amber: #f59e0b;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-full: 9999px;
+            --shadow-subtle: 0 10px 30px -10px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 25px rgba(0, 210, 255, 0.2);
+            --shadow-orange: 0 0 25px rgba(255, 94, 54, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 210, 255, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 94, 54, 0.08) 0px, transparent 50%),
+                radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Ambient background glow */
+        .ambient-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.06) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            z-index: 0;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Top Government Alert Ribbon */
+        .gov-banner {
+            background: linear-gradient(90deg, #0b1526 0%, #152238 50%, #0b1526 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.82rem;
+            padding: 6px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        .gov-brand-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .gov-brand-left .flag-badge {
+            background: linear-gradient(180deg, #ff9933 33%, #ffffff 33%, #ffffff 66%, #128807 66%);
+            width: 18px;
+            height: 12px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        .gov-contacts-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .helpline-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #ffd166;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .helpline-chip:hover {
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 209, 102, 0.6);
+        }
+
+        /* Live Alert Ticker */
+        .alert-ticker-wrap {
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.15), rgba(255, 94, 54, 0.2), rgba(239, 68, 68, 0.15));
+            border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+            display: flex;
+            align-items: center;
+            padding: 8px 24px;
+            overflow: hidden;
+            position: relative;
+            z-index: 95;
+        }
+
+        .ticker-badge {
+            background: var(--emergency-red);
+            color: white;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            animation: pulse-red 2s infinite;
+            margin-right: 16px;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+            50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        .ticker-content {
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 0.88rem;
+            color: #ffe4e6;
+            font-weight: 500;
+            display: flex;
+            animation: marquee 32s linear infinite;
+        }
+
+        .ticker-content span {
+            margin-right: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Main Navigation Bar */
+        .portal-navbar {
+            background: rgba(11, 21, 38, 0.88);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none;
+        }
+
+        .brand-logo-img {
+            height: 48px;
+            width: 48px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand-titles {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-family: var(--font-heading);
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--primary-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-sub {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .nav-links-menu {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-link-item a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.92rem;
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link-item a:hover,
+        .nav-link-item a.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 260px;
+            background: #0f1c30;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            padding: 10px 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.25s ease;
+            z-index: 120;
+            list-style: none;
+        }
+
+        .nav-dropdown:hover .dropdown-panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-panel li a {
+            padding: 10px 18px;
+            font-size: 0.88rem;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 0;
+        }
+
+        .dropdown-panel li a:hover {
+            background: rgba(0, 210, 255, 0.12);
+            color: var(--primary-accent);
+        }
+
+        .nav-action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: var(--font-main);
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-sos {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            animation: pulse-sos 2.5s infinite;
+        }
+        .btn-sos:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.7);
+        }
+
+        @keyframes pulse-sos {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 28px rgba(239, 68, 68, 0.8); }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            color: #051329;
+            font-weight: 800;
+            box-shadow: 0 4px 18px rgba(0, 210, 255, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.5);
+            color: #020914;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-orange {
+            background: rgba(255, 94, 54, 0.1);
+            color: #ff7e5f;
+            border: 1px solid rgba(255, 94, 54, 0.4);
+        }
+        .btn-outline-orange:hover {
+            background: var(--emergency-orange);
+            color: white;
+            box-shadow: var(--shadow-orange);
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Hamburger */
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+            padding: 60px 0 40px;
+            position: relative;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 210, 255, 0.12);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            color: var(--primary-accent);
+            font-size: 0.84rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero-badge i {
+            animation: spin-slow 8s linear infinite;
+        }
+
+        @keyframes spin-slow {
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 3.3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 18px;
+        }
+
+        .hero-title .highlight-blue {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-title .highlight-orange {
+            background: linear-gradient(135deg, #ff9933 0%, #ff5e36 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.12rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .hero-actions-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 35px;
+        }
+
+        .hero-metrics-pill-box {
+            display: flex;
+            gap: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 24px;
+        }
+
+        .hero-pill-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-pill-stat .stat-num {
+            font-family: var(--font-heading);
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+        .hero-pill-stat .stat-lbl {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Hero Right: Live Weather & City Command Glass Widget */
+        .live-command-card {
+            background: rgba(15, 27, 48, 0.85);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), var(--shadow-glow);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .live-command-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .status-dot-pulse {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: var(--safe-green);
+            padding: 4px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .status-dot-pulse .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--safe-green);
+            border-radius: 50%;
+            animation: pulse-green 1.8s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+        }
+
+        .weather-hero-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .weather-big-temp {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .weather-big-temp .unit {
+            font-size: 1.5rem;
+            color: var(--primary-accent);
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .weather-loc-meta {
+            text-align: right;
+        }
+
+        .weather-loc-meta .city {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .weather-loc-meta .condition {
+            font-size: 0.9rem;
+            color: var(--primary-accent);
+            font-weight: 600;
+        }
+
+        .weather-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .mini-stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .mini-stat-card i {
+            font-size: 1.2rem;
+            color: var(--primary-accent);
+            margin-bottom: 6px;
+        }
+
+        .mini-stat-card .val {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+        }
+
+        .mini-stat-card .lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .sensor-status-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .sensor-status-bar span b {
+            color: #fff;
+        }
+
+        /* SECTION COMMON HEADINGS */
+        .section-header-block {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 50px;
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--primary-accent);
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            padding: 4px 14px;
+            border-radius: var(--radius-full);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2.3rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 14px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* DISASTER WARNING CARDS GRID */
+        .disasters-section {
+            padding: 70px 0;
+        }
+
+        .disaster-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .disaster-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .disaster-card:hover {
+            transform: translateY(-6px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-subtle), var(--shadow-glow);
+        }
+
+        .disaster-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .disaster-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .icon-cyclone { background: linear-gradient(135deg, #ff851b 0%, #ff4136 100%); color: #fff; }
+        .icon-flood { background: linear-gradient(135deg, #0074d9 0%, #001f3f 100%); color: #00d2ff; }
+        .icon-rainfall { background: linear-gradient(135deg, #39cccc 0%, #2ecc40 100%); color: #fff; }
+        .icon-wind { background: linear-gradient(135deg, #b10dc9 0%, #7fdbff 100%); color: #fff; }
+        .icon-landslide { background: linear-gradient(135deg, #85144b 0%, #ff851b 100%); color: #fff; }
+        .icon-earthquake { background: linear-gradient(135deg, #ff4136 0%, #85144b 100%); color: #fff; }
+
+        .disaster-title-grp h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .disaster-level-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .badge-normal { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-watch { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-alert { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .disaster-body-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .disaster-telemetry {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .disaster-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+        }
+
+        .card-link-btn {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: gap 0.2s;
+        }
+        .card-link-btn:hover {
+            gap: 10px;
+            color: #fff;
+        }
+
+        /* CIVIC ISSUE REPORTING & GIS INTERACTIVE SECTION */
+        .civic-section {
+            padding: 70px 0;
+            background: rgba(8, 17, 32, 0.6);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .civic-two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 36px;
+            align-items: stretch;
+        }
+
+        /* Issue Form Container */
+        .issue-card-form {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .form-title-wrap {
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+        }
+
+        .form-title-wrap h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            background: rgba(11, 21, 38, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            color: #ffffff;
+            font-family: var(--font-main);
+            font-size: 0.92rem;
+            transition: all 0.25s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.2);
+            background: rgba(14, 27, 48, 0.95);
+        }
+
+        .form-select option {
+            background: #0f1c30;
+            color: #fff;
+        }
+
+        .geo-btn-wrap {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-geo {
+            background: rgba(0, 210, 255, 0.1);
+            color: var(--primary-accent);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-geo:hover {
+            background: var(--primary-accent);
+            color: #030d1d;
+        }
+
+        /* Map Container */
+        .gis-map-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .map-header h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .map-layer-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .layer-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            font-size: 0.74rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .layer-pill.active {
+            background: rgba(0, 210, 255, 0.2);
+            border-color: var(--primary-accent);
+            color: #fff;
+        }
+
+        #gis-interactive-map {
+            height: 380px;
+            width: 100%;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .map-legend-bar {
+            margin-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* TRACK GRIEVANCE MODAL / TICKET STATUS */
+        .track-ticket-box {
+            background: rgba(0, 210, 255, 0.05);
+            border: 1px dashed rgba(0, 210, 255, 0.3);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .ticket-input-grp {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            min-width: 240px;
+        }
+
+        /* EMERGENCY DIRECTORY & HELPLINE SECTION */
+        .helpline-section {
+            padding: 70px 0;
+        }
+
+        .helpline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .helpline-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .helpline-card:hover {
+            border-color: rgba(255, 94, 54, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .helpline-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(255, 94, 54, 0.12);
+            color: var(--emergency-orange);
+            border: 1px solid rgba(255, 94, 54, 0.3);
+        }
+
+        .helpline-card h4 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .helpline-card .phone-num {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffd166;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .helpline-card .duty-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* SAFETY QUIZ INTERACTIVE SNIPPET */
+        .quiz-teaser-section {
+            padding: 50px 0;
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.08) 0%, rgba(58, 123, 213, 0.05) 100%);
+            border-radius: var(--radius-lg);
+            margin: 40px auto;
+            border: 1px solid rgba(0, 210, 255, 0.15);
+        }
+
+        .quiz-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+            flex-wrap: wrap;
+            padding: 0 32px;
+        }
+
+        .quiz-text h3 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .quiz-text p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            max-width: 580px;
+        }
+
+        /* FOOTER */
+        .portal-footer {
+            background: #050c17;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 60px 0 24px;
+            margin-top: 60px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h5 {
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 18px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .footer-col h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 32px;
+            height: 2px;
+            background: var(--primary-accent);
+        }
+
+        .footer-col p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 14px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s, padding-left 0.2s;
+            display: inline-block;
+        }
+
+        .footer-links li a:hover {
+            color: var(--primary-accent);
+            padding-left: 6px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-card {
+            background: #0f1c30;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            color: #fff;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out;
+            min-width: 280px;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* RESPONSIVE MEDIA QUERIES */
+        @media (max-width: 992px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+            .civic-two-col-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .nav-links-menu {
+                display: none;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gov-banner {
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+            }
+            .hero-title {
+                font-size: 2rem;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-metrics-pill-box {
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+        }
+    </style>
+</head>
+<body class="home-page">
+
+    <!-- Ambient glow element -->
+    <div class="ambient-glow" id="mouseGlow"></div>
+
+    <!-- 1. TOP GOVERNMENT ALERT & HELPLINE BAR -->
+    <header class="gov-banner">
+        <div class="gov-brand-left">
+            <span class="flag-badge" aria-label="Indian National Flag"></span>
+            <span>Government of Andhra Pradesh &bull; Guntur Municipal Corporation (గుంటూరు నగర పాలక సంస్థ)</span>
+        </div>
+        <div class="gov-contacts-right">
+            <a href="tel:18004250012" class="helpline-chip" title="GMC Toll Free">
+                <i class="fas fa-phone-alt"></i> 1800-425-0012 (Toll Free)
+            </a>
+            <a href="tel:1077" class="helpline-chip" title="Disaster Emergency Helpline" style="color: #ff9933;">
+                <i class="fas fa-bullhorn"></i> 1077 (Disaster Control)
+            </a>
+            <a href="tel:112" class="helpline-chip" title="National Emergency Helpline" style="color: #ef4444;">
+                <i class="fas fa-shield-alt"></i> 112 (Emergency)
+            </a>
+        </div>
+    </header>
+
+    <!-- 2. EMERGENCY TICKER & REAL-TIME BROADCAST -->
+    <div class="alert-ticker-wrap">
+        <div class="ticker-badge">
+            <i class="fas fa-broadcast-tower"></i> LIVE BULLETIN
+        </div>
+        <div class="ticker-content">
+            <span><i class="fas fa-cloud-showers-heavy text-cyan"></i> <b>Weather Alert:</b> Guntur Urban & Amaravati Region — Light to Moderate showers expected in next 24 hours.</span>
+            <span><i class="fas fa-water text-cyan"></i> <b>Krishna River Basin:</b> Prakasam Barrage discharge monitored at safe flow levels (12,400 cusecs).</span>
+            <span><i class="fas fa-hard-hat text-orange"></i> <b>Civic Special Drive:</b> Ward 14 to 28 Pre-Monsoon Drain desiltation underway. Report blockages via this portal.</span>
+            <span><i class="fas fa-wind text-cyan"></i> <b>Bay of Bengal Update:</b> Deep depression over west-central Bay tracked 280km off AP coast. Normal alert level.</span>
+        </div>
+    </div>
+
+    <!-- 3. MAIN NAVBAR -->
+    <nav class="portal-navbar">
+        <a href="index.html" class="brand-cluster">
+            <img src="static/img/final_logo.png" alt="Guntur Municipal Corporation Logo" class="brand-logo-img" onerror="this.src='static/img/aplogo.png'; this.onerror=null;">
+            <div class="brand-titles">
+                <span class="brand-name">
+                    Suraksha Kavach <span style="font-size: 0.7em; color: var(--primary-accent);">🛡️</span>
+                </span>
+                <span class="brand-sub">Guntur Municipal Corporation</span>
+            </div>
+        </a>
+
+        <ul class="nav-links-menu" id="primaryNav">
+            <li class="nav-link-item"><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
+            <li class="nav-link-item nav-dropdown">
+                <a href="#disaster-center"><i class="fas fa-shield-alt"></i> Natural Disasters <i class="fas fa-chevron-down" style="font-size: 0.7em;"></i></a>
+                <ul class="dropdown-panel">
+                    <li><a href="#cyclone-card"><i class="fas fa-wind text-orange"></i> Cyclone Tracking</a></li>
+                    <li><a href="#flood-card"><i class="fas fa-water text-cyan"></i> Flood Early Warning</a></li>
+                    <li><a href="#rainfall-card"><i class="fas fa-cloud-rain text-blue"></i> Rainfall Monitoring</a></li>
+                    <li><a href="#wind-card"><i class="fas fa-fan text-teal"></i> High Wind Alerts</a></li>
+                    <li><a href="#landslide-card"><i class="fas fa-mountain text-brown"></i> Slope & Landslides</a></li>
+                    <li><a href="#earthquake-card"><i class="fas fa-building text-purple"></i> Seismic Safety</a></li>
+                </ul>
+            </li>
+            <li class="nav-link-item"><a href="#report-issue-section"><i class="fas fa-bullhorn"></i> Report Issue</a></li>
+            <li class="nav-link-item"><a href="#gis-map-section"><i class="fas fa-map-marked-alt"></i> Live Map</a></li>
+            <li class="nav-link-item"><a href="#quiz-section"><i class="fas fa-graduation-cap"></i> Learn & Quiz</a></li>
+            <li class="nav-link-item"><a href="#helpline-section"><i class="fas fa-phone-volume"></i> Helplines</a></li>
+        </ul>
+
+        <div class="nav-action-buttons">
+            <button class="btn btn-sos" onclick="triggerSOSModal()" id="sosQuickBtn">
+                <i class="fas fa-exclamation-triangle"></i> EMERGENCY SOS
+            </button>
+            <button class="mobile-toggle" onclick="toggleMobileNav()" aria-label="Toggle navigation menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 4. HERO SECTION -->
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-grid">
+                    
+                    <!-- Left: Hero Intro -->
+                    <div class="hero-text-col">
+                        <div class="hero-badge">
+                            <i class="fas fa-circle-notch"></i> SMART DISASTER & CIVIC COMMAND
+                        </div>
+                        <h1 class="hero-title">
+                            Shielding Guntur with <span class="highlight-blue">Suraksha Kavach</span> &amp; <span class="highlight-orange">Smart Governance</span>
+                        </h1>
+                        <p class="hero-description">
+                            Welcome to the official Unified Portal of the <b>Guntur Municipal Corporation</b>. 
+                            Track live multi-hazard disaster early warnings, pinpoint localized weather alerts, 
+                            and report civic grievances directly to ward task forces with instant GPS tracking.
+                        </p>
+                        
+                        <div class="hero-actions-row">
+                            <a href="#report-issue-section" class="btn btn-primary">
+                                <i class="fas fa-file-signature"></i> Report Civic Issue
+                            </a>
+                            <a href="#disaster-center" class="btn btn-outline-orange">
+                                <i class="fas fa-shield-virus"></i> Disaster Warning Unit
+                            </a>
+                            <a href="#gis-map-section" class="btn btn-secondary">
+                                <i class="fas fa-map-location-dot"></i> Live Ward Map
+                            </a>
+                        </div>
+
+                        <div class="hero-metrics-pill-box">
+                            <div class="hero-pill-stat">
+                                <span class="stat-num" id="statWards">57</span>
+                                <span class="stat-lbl">Municipal Wards</span>
+                            </div>
+                            <div class="hero-pill-stat">
+                                <span class="stat-num" id="statSensors">18</span>
+                                <span class="stat-lbl">Early Warning Nodes</span>
+                            </div>
+                            <div class="hero-pill-stat">
+                                <span class="stat-num" id="statResolved">1,482</span>
+                                <span class="stat-lbl">Issues Resolved</span>
+                            </div>
+                            <div class="hero-pill-stat">
+                                <span class="stat-num" id="statTeams">24/7</span>
+                                <span class="stat-lbl">Rapid Response</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Weather Command Glass Widget -->
+                    <div class="hero-widget-col">
+                        <div class="live-command-card">
+                            <div class="card-header-flex">
+                                <span class="status-dot-pulse">
+                                    <span class="pulse"></span> LIVE SENSORS ACTIVE
+                                </span>
+                                <button class="btn btn-secondary" onclick="refreshLiveData()" style="padding: 4px 12px; font-size: 0.78rem;" title="Refresh real-time data">
+                                    <i class="fas fa-sync-alt" id="syncIcon"></i> Live Sync
+                                </button>
+                            </div>
+
+                            <div class="weather-hero-row">
+                                <div class="weather-big-temp">
+                                    <span id="liveTempDisplay">31</span><span class="unit">°C</span>
+                                </div>
+                                <div class="weather-loc-meta">
+                                    <div class="city"><i class="fas fa-location-dot" style="color: var(--emergency-orange); font-size: 0.9em;"></i> Guntur City</div>
+                                    <div class="condition" id="liveWeatherCond">Partly Cloudy &bull; Moderate Breeze</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 3px;" id="lastUpdatedTime">Updated Just Now</div>
+                                </div>
+                            </div>
+
+                            <div class="weather-mini-grid">
+                                <div class="mini-stat-card">
+                                    <i class="fas fa-tint"></i>
+                                    <div class="val" id="valHumidity">74%</div>
+                                    <div class="lbl">Humidity</div>
+                                </div>
+                                <div class="mini-stat-card">
+                                    <i class="fas fa-wind"></i>
+                                    <div class="val" id="valWind">16 km/h</div>
+                                    <div class="lbl">Wind (ENE)</div>
+                                </div>
+                                <div class="mini-stat-card">
+                                    <i class="fas fa-smog"></i>
+                                    <div class="val" style="color: var(--safe-green);" id="valAQI">46 (Good)</div>
+                                    <div class="lbl">Air Quality</div>
+                                </div>
+                            </div>
+
+                            <div class="sensor-status-bar">
+                                <span><i class="fas fa-satellite-dish" style="color: var(--primary-accent); margin-right: 6px;"></i> Prakasam Barrage Level: <b>57.2 ft (Normal)</b></span>
+                                <span style="color: var(--safe-green); font-weight: 700;">● ALL CLEAR</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. NATURAL DISASTER INTELLIGENCE & EARLY WARNING CENTER -->
+        <section class="disasters-section" id="disaster-center">
+            <div class="container">
+                <div class="section-header-block">
+                    <span class="section-tag">MULTI-HAZARD EARLY WARNING SYSTEM</span>
+                    <h2 class="section-title">Disaster Preparedness &amp; Alert Center</h2>
+                    <p class="section-subtitle">Real-time telemetric monitoring, Doppler radar data, and automated civic safety protocols across Guntur District.</p>
+                </div>
+
+                <div class="disaster-cards-grid">
+                    
+                    <!-- 1. Cyclone Warning -->
+                    <div class="disaster-card" id="cyclone-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-cyclone">
+                                    <i class="fas fa-wind"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>Cyclone &amp; Storm Surge</h3>
+                                    <span class="disaster-level-badge badge-normal">Status: Normal / Watch</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                Continuous satellite tracking for Bay of Bengal low-pressure systems. Early evacuation routes and coastal surge barriers are active.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>Distance: 280 km Off-Coast</span>
+                                <span>Gusts: 45 km/h</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-shield-alt"></i> 14 Shelters Ready</span>
+                            <a href="#gis-map-section" class="card-link-btn">View Map <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- 2. Flood & River Basin -->
+                    <div class="disaster-card" id="flood-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-flood">
+                                    <i class="fas fa-water"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>Flood &amp; Drainage Network</h3>
+                                    <span class="disaster-level-badge badge-normal">Status: Safe Discharge</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                Krishna river tributary gauges, automated flood gates, and storm water drain sensor feeds in low-lying urban wards.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>Prakasam: 12.4k Cusecs</span>
+                                <span>Capacity: 88% Safe</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-pump-soap"></i> 12 Pumps Active</span>
+                            <a href="#gis-map-section" class="card-link-btn">Inundation Zones <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- 3. Heavy Rainfall Tracking -->
+                    <div class="disaster-card" id="rainfall-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-rainfall">
+                                    <i class="fas fa-cloud-rain"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>Rainfall Precipitation</h3>
+                                    <span class="disaster-level-badge badge-watch">Status: Moderate Showers</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                Automated Weather Station (AWS) millimeter precipitation logging across Brodipet, Arundelpet, and Nagarampalem.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>24h Acc: 14.2 mm</span>
+                                <span>Peak: 3.5 mm/hr</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-cloud-showers-heavy"></i> Light Forecast</span>
+                            <a href="#gis-map-section" class="card-link-btn">Rain Gauges <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- 4. High Wind Hazard -->
+                    <div class="disaster-card" id="wind-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-wind">
+                                    <i class="fas fa-fan"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>High Velocity Winds</h3>
+                                    <span class="disaster-level-badge badge-normal">Status: 16 km/h (Calm)</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                Anemometer telemetry across municipal towers to detect sudden micro-bursts and safeguard overhead electrical infrastructure.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>Avg Speed: 16 km/h</span>
+                                <span>Max Gust: 22 km/h</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-tree"></i> Tree Patrol On-Duty</span>
+                            <a href="#report-issue-section" class="card-link-btn">Report Fallen Tree <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- 5. Landslide & Slope Stability -->
+                    <div class="disaster-card" id="landslide-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-landslide">
+                                    <i class="fas fa-mountain"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>Landslide &amp; Hill Slopes</h3>
+                                    <span class="disaster-level-badge badge-normal">Status: Slopes Stable</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                Geotechnical soil moisture and inclinometer monitoring in Mangalagiri and Kondaveedu ghat sectors to prevent slope displacement.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>Soil Moisture: 32%</span>
+                                <span>Displacement: 0.0mm</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-road"></i> Ghat Roads Open</span>
+                            <a href="#gis-map-section" class="card-link-btn">Slope Status <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- 6. Seismic & Structural Safety -->
+                    <div class="disaster-card" id="earthquake-card">
+                        <div>
+                            <div class="disaster-card-header">
+                                <div class="disaster-icon-box icon-earthquake">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="disaster-title-grp">
+                                    <h3>Seismic &amp; Structural Safety</h3>
+                                    <span class="disaster-level-badge badge-normal">Status: Zone III Stable</span>
+                                </div>
+                            </div>
+                            <p class="disaster-body-desc">
+                                National Seismological Network feed monitoring micro-tremors with fast structural safety inspection triage for municipal wards.
+                            </p>
+                            <div class="disaster-telemetry">
+                                <span>Last Event: None (0.0M)</span>
+                                <span>Zone: Moderate (III)</span>
+                            </div>
+                        </div>
+                        <div class="disaster-card-footer">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fas fa-check-circle text-green"></i> No Tremors</span>
+                            <a href="#quiz-section" class="card-link-btn">Safety Rules <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. CITIZEN GRIEVANCE REPORTING & LIVE GIS MAP SECTION -->
+        <section class="civic-section" id="report-issue-section">
+            <div class="container">
+                <div class="section-header-block">
+                    <span class="section-tag">DIRECT CITIZEN ACTION</span>
+                    <h2 class="section-title">Report Civic Issue to Government</h2>
+                    <p class="section-subtitle">Potholes, water logging, streetlight failure, fallen trees or drainage overflow — Submit with GPS and track resolution in real time.</p>
+                </div>
+
+                <div class="civic-two-col-grid">
+                    
+                    <!-- Left: Interactive Submission Form -->
+                    <div class="issue-card-form">
+                        <div class="form-title-wrap">
+                            <h3><i class="fas fa-paper-plane" style="color: var(--primary-accent);"></i> Rapid Grievance Filing</h3>
+                        </div>
+
+                        <form id="civicIssueForm" onsubmit="handleIssueSubmit(event)">
+                            <div class="form-group">
+                                <label class="form-label" for="issueCategory"><i class="fas fa-list"></i> Issue Category</label>
+                                <select class="form-select" id="issueCategory" required>
+                                    <option value="" disabled selected>Select Category...</option>
+                                    <option value="Water Logging & Flood Drainage">🌧️ Water Logging & Flood Drainage</option>
+                                    <option value="Road Damage / Dangerous Pothole">🚧 Road Damage / Dangerous Pothole</option>
+                                    <option value="Street Light Failure / Electrical Hazard">💡 Street Light / Electrical Hazard</option>
+                                    <option value="Fallen Tree / Blocked Roadway">🌳 Fallen Tree / Blocked Roadway</option>
+                                    <option value="Sanitation & Garbage Accumulation">🗑️ Sanitation & Garbage Accumulation</option>
+                                    <option value="Drinking Water Contamination / Leakage">🚰 Drinking Water Contamination / Leak</option>
+                                    <option value="Stray Animal / Public Nuisance">🐕 Stray Animal Control</option>
+                                    <option value="Other Emergency Civic Grievance">⚠️ Other Emergency Grievance</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="wardLocation"><i class="fas fa-map-pin"></i> Ward &amp; Locality</label>
+                                <div class="geo-btn-wrap">
+                                    <select class="form-select" id="wardLocation" required>
+                                        <option value="" disabled selected>Choose Ward Locality...</option>
+                                        <option value="Ward 12 - Arundelpet">Ward 12 - Arundelpet</option>
+                                        <option value="Ward 18 - Brodipet">Ward 18 - Brodipet</option>
+                                        <option value="Ward 22 - Nagarampalem">Ward 22 - Nagarampalem</option>
+                                        <option value="Ward 31 - Pattabhipuram">Ward 31 - Pattabhipuram</option>
+                                        <option value="Ward 07 - Kothapet">Ward 07 - Kothapet</option>
+                                        <option value="Ward 45 - Auto Nagar">Ward 45 - Auto Nagar</option>
+                                        <option value="Ward 29 - SVN Colony">Ward 29 - SVN Colony</option>
+                                        <option value="Ward 52 - Gujanagundla">Ward 52 - Gujanagundla</option>
+                                        <option value="Ward 03 - Old Guntur">Ward 03 - Old Guntur</option>
+                                    </select>
+                                    <button type="button" class="btn-geo" onclick="fetchCurrentGPS()">
+                                        <i class="fas fa-crosshairs"></i> Auto GPS
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="issueDescription"><i class="fas fa-align-left"></i> Description &amp; Landmark</label>
+                                <textarea class="form-control" id="issueDescription" rows="3" placeholder="Describe the issue, nearest landmark, and severity..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="issueSeverity"><i class="fas fa-exclamation-triangle"></i> Severity Level</label>
+                                <select class="form-select" id="issueSeverity" required>
+                                    <option value="Medium Priority" selected>Medium Priority (Standard 48hr Resolution)</option>
+                                    <option value="High Priority">High Priority (24hr Resolution Required)</option>
+                                    <option value="Critical Emergency">🚨 Critical Emergency (Immediate Task Force Deployment)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="citizenPhone"><i class="fas fa-phone"></i> Citizen Contact Number</label>
+                                <input type="tel" class="form-control" id="citizenPhone" placeholder="10-digit mobile number for SMS tracking updates" pattern="[0-9]{10}" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 1rem;">
+                                <i class="fas fa-paper-plane"></i> Submit Grievance &amp; Generate Ticket
+                            </button>
+                        </form>
+
+                        <!-- Instant Ticket Tracker Search Box -->
+                        <div class="track-ticket-box">
+                            <span style="font-size: 0.85rem; font-weight: 700; color: #fff;">
+                                <i class="fas fa-search" style="color: var(--primary-accent);"></i> Already have a Ticket ID?
+                            </span>
+                            <div class="ticket-input-grp">
+                                <input type="text" class="form-control" id="searchTicketId" placeholder="e.g. GMC-84920" style="padding: 8px 12px; font-size: 0.85rem;">
+                                <button type="button" class="btn btn-secondary" onclick="trackExistingTicket()" style="padding: 8px 14px; font-size: 0.85rem; white-space: nowrap;">
+                                    Track
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Live Interactive GIS Ward Map -->
+                    <div class="gis-map-card" id="gis-map-section">
+                        <div class="map-header">
+                            <h3><i class="fas fa-map-marked-alt" style="color: var(--primary-accent);"></i> Guntur GIS Live Threat Map</h3>
+                            <div class="map-layer-pills">
+                                <span class="layer-pill active" onclick="toggleMapFilter(this, 'all')">All Layers</span>
+                                <span class="layer-pill" onclick="toggleMapFilter(this, 'shelters')">Relief Shelters</span>
+                                <span class="layer-pill" onclick="toggleMapFilter(this, 'hospitals')">Hospitals</span>
+                                <span class="layer-pill" onclick="toggleMapFilter(this, 'issues')">Active Issues</span>
+                            </div>
+                        </div>
+
+                        <div id="gis-interactive-map"></div>
+
+                        <div class="map-legend-bar">
+                            <div class="legend-item"><span class="legend-color" style="background: #10b981;"></span> GMC Control Center</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #00d2ff;"></span> Flood Relief Shelters</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #ff5e36;"></span> Active Reported Issue</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #a855f7;"></span> Emergency Hospital Hub</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. EMERGENCY HELPLINE & TASK FORCE DIRECTORY -->
+        <section class="helpline-section" id="helpline-section">
+            <div class="container">
+                <div class="section-header-block">
+                    <span class="section-tag">24/7 RAPID DISPATCH</span>
+                    <h2 class="section-title">Emergency Helpline Directory</h2>
+                    <p class="section-subtitle">One-tap direct dial lines for GMC Command Control, Disaster Response Force, Fire, Police, and Medical Trauma.</p>
+                </div>
+
+                <div class="helpline-grid">
+                    
+                    <div class="helpline-card">
+                        <div class="helpline-icon"><i class="fas fa-city"></i></div>
+                        <h4>GMC Central Control Room</h4>
+                        <a href="tel:08632224202" class="phone-num">0863-2224202</a>
+                        <span class="duty-time">24 Hours Continuous Service</span>
+                    </div>
+
+                    <div class="helpline-card">
+                        <div class="helpline-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--emergency-red);"><i class="fas fa-fire-extinguisher"></i></div>
+                        <h4>Fire &amp; Rescue Services</h4>
+                        <a href="tel:101" class="phone-num" style="color: #ff6b6b;">101 / 112</a>
+                        <span class="duty-time">State Emergency Response</span>
+                    </div>
+
+                    <div class="helpline-card">
+                        <div class="helpline-icon" style="background: rgba(0, 210, 255, 0.15); color: var(--primary-accent);"><i class="fas fa-ambulance"></i></div>
+                        <h4>GGH Guntur Medical / Trauma</h4>
+                        <a href="tel:108" class="phone-num" style="color: #00d2ff;">108 / 102</a>
+                        <span class="duty-time">Free Emergency Ambulance</span>
+                    </div>
+
+                    <div class="helpline-card">
+                        <div class="helpline-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--safe-green);"><i class="fas fa-shield-alt"></i></div>
+                        <h4>AP Disaster Authority (APSDMA)</h4>
+                        <a href="tel:1070" class="phone-num" style="color: #10b981;">1070 / 1077</a>
+                        <span class="duty-time">State Disaster Hotline</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. SAFETY QUIZ & CITIZEN PREPAREDNESS BANNER -->
+        <section class="container" id="quiz-section">
+            <div class="quiz-teaser-section">
+                <div class="quiz-flex">
+                    <div class="quiz-text">
+                        <h3><i class="fas fa-lightbulb" style="color: #ffd166;"></i> Test Your Disaster Preparedness IQ!</h3>
+                        <p>How well do you and your family know cyclone safety protocols, flood electrical hazards, and emergency supply checklist? Take our 2-minute interactive quiz.</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="launchQuickQuizModal()">
+                            <i class="fas fa-play-circle"></i> Start Safety Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 9. FOOTER -->
+    <footer class="portal-footer">
+        <div class="container">
+            <div class="footer-grid">
+                
+                <div class="footer-col">
+                    <div class="brand-cluster" style="margin-bottom: 16px;">
+                        <img src="static/img/final_logo.png" alt="GMC Logo" class="brand-logo-img" onerror="this.src='static/img/aplogo.png'; this.onerror=null;">
+                        <div class="brand-titles">
+                            <span class="brand-name" style="font-size: 1.25rem;">Suraksha Kavach</span>
+                            <span class="brand-sub">Guntur Municipal Corporation</span>
+                        </div>
+                    </div>
+                    <p>
+                        Guntur Municipal Corporation (గుంటూరు నగర పాలక సంస్థ) is committed to citizen safety, smart civic management, and resilient multi-hazard disaster risk reduction.
+                    </p>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">
+                        <i class="fas fa-location-dot" style="color: var(--primary-accent);"></i> GMC Head Office, Opposite Collectorate, Guntur, Andhra Pradesh - 522002.
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Quick Portals</h5>
+                    <ul class="footer-links">
+                        <li><a href="#disaster-center"><i class="fas fa-angle-right"></i> Cyclone Early Warning</a></li>
+                        <li><a href="#flood-card"><i class="fas fa-angle-right"></i> Krishna River Telemetry</a></li>
+                        <li><a href="#report-issue-section"><i class="fas fa-angle-right"></i> Lodge Civic Grievance</a></li>
+                        <li><a href="#gis-map-section"><i class="fas fa-angle-right"></i> Interactive Ward Map</a></li>
+                        <li><a href="#quiz-section"><i class="fas fa-angle-right"></i> Citizen Safety Quiz</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Civic Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="#report-issue-section"><i class="fas fa-angle-right"></i> Water Drainage Clearance</a></li>
+                        <li><a href="#report-issue-section"><i class="fas fa-angle-right"></i> Pothole Repair Taskforce</a></li>
+                        <li><a href="#report-issue-section"><i class="fas fa-angle-right"></i> Streetlight Replacement</a></li>
+                        <li><a href="#report-issue-section"><i class="fas fa-angle-right"></i> Municipal Sanitation Drive</a></li>
+                        <li><a href="#helpline-section"><i class="fas fa-angle-right"></i> Disaster Relief Centers</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h5>Emergency Control</h5>
+                    <p><i class="fas fa-phone-alt text-orange"></i> <b>Control Room:</b> 0863-2224202</p>
+                    <p><i class="fas fa-envelope text-cyan"></i> <b>Email:</b> commissioner@gunturcorporation.org</p>
+                    <p><i class="fas fa-clock text-green"></i> <b>Command Center:</b> Active 24x7 / 365 Days</p>
+                    <div style="margin-top: 14px;">
+                        <button class="btn btn-sos" onclick="triggerSOSModal()" style="padding: 8px 16px; font-size: 0.8rem;">
+                            <i class="fas fa-phone-volume"></i> Immediate SOS Dial
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <div>
+                    &copy; 2026 Guntur Municipal Corporation. All Rights Reserved. &bull; <i>Suraksha Kavach Disaster Portal</i>
+                </div>
+                <div>
+                    Built with Pride for the Citizens of Guntur, Andhra Pradesh.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 10. TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- CORE INTERACTION SCRIPT -->
+    <script>
+        // 1. Mouse Ambient Glow Follower
+        const mouseGlow = document.getElementById('mouseGlow');
+        window.addEventListener('mousemove', (e) => {
+            if (mouseGlow) {
+                mouseGlow.style.transform = `translate(${e.clientX - 300}px, ${e.clientY - 300}px)`;
+            }
+        });
+
+        // 2. Mobile Nav Toggle
+        function toggleMobileNav() {
+            const nav = document.getElementById('primaryNav');
+            if (nav.style.display === 'flex') {
+                nav.style.display = 'none';
+            } else {
+                nav.style.display = 'flex';
+                nav.style.flexDirection = 'column';
+                nav.style.position = 'absolute';
+                nav.style.top = '100%';
+                nav.style.left = '0';
+                nav.style.width = '100%';
+                nav.style.background = '#0b1526';
+                nav.style.padding = '20px';
+            }
+        }
+
+        // 3. Toast Notifications
+        function showToast(message, icon = 'fa-info-circle', type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-card';
+            
+            let iconColor = 'var(--primary-accent)';
+            if (type === 'success') iconColor = 'var(--safe-green)';
+            if (type === 'error') iconColor = 'var(--emergency-red)';
+            if (type === 'warning') iconColor = 'var(--emergency-orange)';
+
+            toast.innerHTML = `
+                <i class="fas ${icon}" style="font-size: 1.2rem; color: ${iconColor};"></i>
+                <div style="flex: 1;">${message}</div>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 400);
+            }, 4500);
+        }
+
+        // 4. Live Data Sync Simulation
+        function refreshLiveData() {
+            const icon = document.getElementById('syncIcon');
+            if (icon) icon.classList.add('fa-spin');
+
+            setTimeout(() => {
+                const temp = 30 + Math.floor(Math.random() * 4);
+                const humidity = 70 + Math.floor(Math.random() * 10);
+                const wind = 14 + Math.floor(Math.random() * 6);
+                
+                document.getElementById('liveTempDisplay').innerText = temp;
+                document.getElementById('valHumidity').innerText = humidity + '%';
+                document.getElementById('valWind').innerText = wind + ' km/h';
+                document.getElementById('lastUpdatedTime').innerText = 'Updated ' + new Date().toLocaleTimeString();
+
+                if (icon) icon.classList.remove('fa-spin');
+                showToast('Telemetry updated with live Guntur AWS station feeds!', 'fa-satellite-dish', 'success');
+            }, 700);
+        }
+
+        // 5. GPS Auto-detect
+        function fetchCurrentGPS() {
+            showToast('Acquiring high-accuracy GPS coordinates...', 'fa-crosshairs', 'info');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude.toFixed(4);
+                        const lng = pos.coords.longitude.toFixed(4);
+                        const desc = document.getElementById('issueDescription');
+                        desc.value = `[GPS Location: ${lat}° N, ${lng}° E] ` + desc.value;
+                        showToast(`GPS Pin Acquired: ${lat}, ${lng}`, 'fa-check-circle', 'success');
+                    },
+                    (err) => {
+                        // Fallback default Guntur coordinates
+                        const desc = document.getElementById('issueDescription');
+                        desc.value = `[Pin: 16.3067° N, 80.4365° E (Guntur Center)] ` + desc.value;
+                        showToast('Using Guntur Municipal Default Coordinates (16.3067, 80.4365)', 'fa-map-pin', 'warning');
+                    }
+                );
+            } else {
+                showToast('Geolocation not supported on this browser.', 'fa-exclamation-triangle', 'error');
+            }
+        }
+
+        // 6. Handle Issue Submission
+        function handleIssueSubmit(event) {
+            event.preventDefault();
+            const category = document.getElementById('issueCategory').value;
+            const ward = document.getElementById('wardLocation').value;
+            const desc = document.getElementById('issueDescription').value;
+            const severity = document.getElementById('issueSeverity').value;
+            const phone = document.getElementById('citizenPhone').value;
+
+            const ticketId = 'GMC-' + Math.floor(10000 + Math.random() * 90000);
+
+            // Save to LocalStorage for persistence
+            const newIssue = {
+                ticketId,
+                category,
+                ward,
+                desc,
+                severity,
+                phone,
+                timestamp: new Date().toLocaleString(),
+                status: 'Under Review by Ward Task Force'
+            };
+
+            const existingIssues = JSON.parse(localStorage.getItem('gmc_citizen_issues') || '[]');
+            existingIssues.unshift(newIssue);
+            localStorage.setItem('gmc_citizen_issues', JSON.stringify(existingIssues));
+
+            // Update stats
+            const statElem = document.getElementById('statResolved');
+            if (statElem) {
+                const current = parseInt(statElem.innerText.replace(/,/g, '')) || 1482;
+                statElem.innerText = (current + 1).toLocaleString();
+            }
+
+            // Reset form
+            document.getElementById('civicIssueForm').reset();
+
+            // Display success modal alert
+            alert(`✅ GRIEVANCE REGISTERED SUCCESSFULLY!\n\nTicket Number: ${ticketId}\nCategory: ${category}\nWard: ${ward}\nStatus: Dispatched to Municipal Emergency Cell.\n\nAn SMS confirmation will be sent to +91-${phone}.`);
+
+            showToast(`Grievance #${ticketId} submitted! Ward inspector assigned.`, 'fa-check-double', 'success');
+        }
+
+        // 7. Track Existing Ticket
+        function trackExistingTicket() {
+            const ticketInput = document.getElementById('searchTicketId').value.trim().toUpperCase();
+            if (!ticketInput) {
+                showToast('Please enter a valid GMC Ticket ID (e.g. GMC-84920)', 'fa-search', 'warning');
+                return;
+            }
+
+            const existingIssues = JSON.parse(localStorage.getItem('gmc_citizen_issues') || '[]');
+            const found = existingIssues.find(i => i.ticketId.toUpperCase() === ticketInput);
+
+            if (found) {
+                alert(`📋 TICKET STATUS: ${found.ticketId}\n\n• Category: ${found.category}\n• Ward: ${found.ward}\n• Severity: ${found.severity}\n• Current Status: ${found.status}\n• Submitted: ${found.timestamp}\n\nOur field engineer is actively addressing this location.`);
+            } else {
+                alert(`📋 TICKET STATUS: ${ticketInput}\n\n• Status: Active & In-Progress with Ward Field Unit\n• Assigned Team: GMC Rapid Action Squad #4\n• Expected Resolution: Within 24-48 hours.`);
+            }
+        }
+
+        // 8. SOS Emergency Trigger
+        function triggerSOSModal() {
+            const choice = confirm("🚨 IMMEDIATE EMERGENCY SOS TRIGGER 🚨\n\nAre you in an immediate life-safety or disaster danger in Guntur Municipal Area?\n\nClick OK to connect immediately with GMC Emergency Dispatch & Disaster Control Room (0863-2224202).");
+            if (choice) {
+                window.location.href = "tel:08632224202";
+            }
+        }
+
+        // 9. Quick Safety Quiz Modal
+        function launchQuickQuizModal() {
+            const ans1 = prompt("Quick Safety Question 1/2:\nDuring a severe cyclone warning, what should you do first?\n\nA) Go near the beach or open ground\nB) Stay indoors, secure doors/windows & switch off main electrical supply\nC) Park vehicle under large trees\n\n(Type A, B, or C):");
+            if (ans1 && ans1.toUpperCase() === 'B') {
+                const ans2 = prompt("Correct! 🌟 Question 2/2:\nWhat is the 24x7 Toll-Free Helpline of Guntur Municipal Corporation?\n\nA) 1800-425-0012\nB) 1000-000-0000\nC) 9999-999-999\n\n(Type A, B, or C):");
+                if (ans2 && ans2.toUpperCase() === 'A') {
+                    alert("🎉 Outstanding! 100% Score! You are fully prepared to safeguard your community. Stay safe with Suraksha Kavach!");
+                } else {
+                    alert("Good try! The GMC Toll Free helpline is 1800-425-0012. Keep it saved!");
+                }
+            } else if (ans1) {
+                alert("Safety Tip: In a cyclone, always stay indoors, disconnect electrical appliances, and monitor official GMC bulletins.");
+            }
+        }
+
+        // 10. Interactive GIS Map Initialization
+        let mapInstance = null;
+        let mapMarkers = [];
+
+        function initLeafletMap() {
+            const mapContainer = document.getElementById('gis-interactive-map');
+            if (!mapContainer) return;
+
+            // Guntur Coordinates: 16.3067° N, 80.4365° E
+            const gunturCoords = [16.3067, 80.4365];
+
+            if (typeof L === 'undefined') {
+                mapContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #94a3b8;"><i class="fas fa-map" style="font-size: 2rem; margin-bottom: 10px; display: block; color: var(--primary-accent);"></i><b>Guntur Municipal GIS Map Ready</b><br>Coordinates: 16.3067° N, 80.4365° E (57 Wards Active)</div>';
+                return;
+            }
+
+            mapInstance = L.map('gis-interactive-map', {
+                center: gunturCoords,
+                zoom: 13,
+                zoomControl: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors | GMC GIS'
+            }).addTo(mapInstance);
+
+            const locations = [
+                { name: "GMC Command Control Headquarters", lat: 16.3067, lng: 80.4365, type: "control", desc: "24/7 Disaster Management Command & Dispatch" },
+                { name: "Govt General Hospital (GGH) Guntur", lat: 16.3015, lng: 80.4430, type: "hospitals", desc: "Trauma Care Hub & 500 Emergency Beds" },
+                { name: "Arundelpet Flood Relief Shelter", lat: 16.3120, lng: 80.4280, type: "shelters", desc: "Capacity: 450 Persons & Clean Water Supply" },
+                { name: "Brodipet Emergency Relief Center", lat: 16.3180, lng: 80.4320, type: "shelters", desc: "Shelter #3 & Medical First Aid Kit" },
+                { name: "Nagarampalem Storm Water Sensor", lat: 16.2990, lng: 80.4290, type: "issues", desc: "Drainage Sump Pump Operational" },
+                { name: "Pattabhipuram Ward Office", lat: 16.2950, lng: 80.4410, type: "shelters", desc: "Ward Relief Distribution Post" }
+            ];
+
+            locations.forEach(loc => {
+                let color = "#00d2ff";
+                if (loc.type === "control") color = "#10b981";
+                if (loc.type === "hospitals") color = "#a855f7";
+                if (loc.type === "issues") color = "#ff5e36";
+
+                const customMarker = L.circleMarker([loc.lat, loc.lng], {
+                    radius: 9,
+                    fillColor: color,
+                    color: "#ffffff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                }).addTo(mapInstance);
+
+                customMarker.bindPopup(`
+                    <div style="font-family: var(--font-main); color: #0b1526; padding: 4px;">
+                        <b style="font-size: 1rem; color: #1976d2;">${loc.name}</b>
+                        <p style="margin: 4px 0 0; font-size: 0.85rem;">${loc.desc}</p>
+                        <span style="font-size: 0.72rem; color: #666; display: inline-block; margin-top: 4px;">● GMC GIS Node</span>
+                    </div>
+                `);
+
+                mapMarkers.push({ marker: customMarker, type: loc.type });
+            });
+        }
+
+        // Map Filter Toggles
+        function toggleMapFilter(element, filterType) {
+            document.querySelectorAll('.layer-pill').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            if (!mapInstance) return;
+
+            mapMarkers.forEach(item => {
+                if (filterType === 'all' || item.type === filterType) {
+                    mapInstance.addLayer(item.marker);
+                } else {
+                    mapInstance.removeLayer(item.marker);
+                }
+            });
+        }
+
+        // Initialize Map on Window Load
+        window.addEventListener('DOMContentLoaded', () => {
+            initLeafletMap();
+        });
+    </script>
+</body>
+</html>

@@ -8,6 +8,8 @@ from app.models import Issue # type: ignore
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
+@bp.route('/index')
+@bp.route('/index.html')
 def home():
     weather_summary = None
     try:

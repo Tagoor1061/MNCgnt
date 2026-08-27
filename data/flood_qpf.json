@@ -39,7 +39,7 @@
             }
         ],
         "status": "default",
-        "fetched_at": "2026-08-24 17:19:18"
+        "fetched_at": "2026-08-27 21:05:58"
     },
     "district_rainfall": {
         "districts": [
@@ -72,7 +72,7 @@
             }
         ],
         "status": "default",
-        "fetched_at": "2026-08-24 17:19:08"
+        "fetched_at": "2026-08-27 21:05:55"
     },
     "state_rainfall": {
         "state": "Andhra Pradesh",
@@ -80,7 +80,7 @@
         "normal_mm": 51.2,
         "departure_percent": 46.1,
         "status": "default",
-        "fetched_at": "2026-08-24 17:19:13"
+        "fetched_at": "2026-08-27 21:05:58"
     },
     "gauges": [
         {
@@ -134,5 +134,5 @@
             "message": "Flash-flood watch: intense rain may cause rapid runoff in urban drains."
         }
     ],
-    "fetched_at": "2026-08-24 17:19:18"
+    "fetched_at": "2026-08-27 21:05:58"
 }
